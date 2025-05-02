@@ -30,7 +30,7 @@ export default function Register() {
     }
     if (!formData.email.trim()) {
       errors.email = 'Email is required';
-    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.email)) {
+    } else if (!formData.email.endsWith('@gmail.com')) {
       errors.email = 'Please enter a valid email address';
     }
     if (!formData.password) {
