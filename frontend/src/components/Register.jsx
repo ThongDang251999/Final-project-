@@ -28,11 +28,15 @@ export default function Register() {
     if (!formData.name.trim()) {
       errors.name = 'Name is required';
     }
-    if (!formData.email.trim()) {
+
+    // Simplified email validation
+    const email = formData.email.trim().toLowerCase();
+    if (!email) {
       errors.email = 'Email is required';
-    } else if (!formData.email.endsWith('@gmail.com')) {
-      errors.email = 'Please enter a valid email address';
+    } else if (!email.endsWith('@gmail.com')) {
+      errors.email = 'Email must end with @gmail.com';
     }
+
     if (!formData.password) {
       errors.password = 'Password is required';
     } else if (formData.password.length < 6) {

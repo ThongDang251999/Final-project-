@@ -28,6 +28,7 @@ export const AuthProvider = ({ children }) => {
       setToken(response.data.token);
       return response.data;
     } catch (err) {
+      console.error('Login error:', err.response?.data || err.message);
       setError(err.response?.data?.message || 'An error occurred');
       throw err;
     } finally {
@@ -37,12 +38,16 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (name, email, password) => {
     try {
+      console.log('Attempting registration with:', { name, email });
       setLoading(true);
       setError(null);
+      
       const response = await axios.post('/api/auth/register', { name, email, password });
+      console.log('Registration successful:', response.data);
       setToken(response.data.token);
       return response.data;
     } catch (err) {
+      console.error('Registration error:', err.response?.data || err.message);
       setError(err.response?.data?.message || 'An error occurred');
       throw err;
     } finally {

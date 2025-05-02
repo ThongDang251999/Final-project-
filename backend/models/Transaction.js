@@ -6,6 +6,11 @@ const transactionSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  accountId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Account',
+    required: true
+  },
   amount: {
     type: Number,
     required: true
@@ -26,6 +31,12 @@ const transactionSchema = new mongoose.Schema({
   date: {
     type: Date,
     default: Date.now
+  },
+  rating: {
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 10
   }
 });
 
