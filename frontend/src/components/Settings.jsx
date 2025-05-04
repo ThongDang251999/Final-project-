@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   User, 
@@ -57,6 +57,26 @@ const Settings = () => {
     push: true,
     weeklyReport: true
   });
+  const [profile, setProfile] = useState({
+    name: user?.name || '',
+    email: user?.email || '',
+    phone: user?.phone || ''
+  });
+  const [profileStatus, setProfileStatus] = useState({ success: '', error: '' });
+  const [passwords, setPasswords] = useState({
+    current: '',
+    new: '',
+    confirm: ''
+  });
+  const [passwordStatus, setPasswordStatus] = useState({ success: '', error: '' });
+
+  useEffect(() => {
+    setProfile({
+      name: user?.name || '',
+      email: user?.email || '',
+      phone: user?.phone || ''
+    });
+  }, [user]);
 
   const handlePreferenceChange = async (e) => {
     const { name, value } = e.target;
@@ -146,6 +166,44 @@ const Settings = () => {
     }));
   };
 
+  const handleProfileChange = (e) => {
+    setProfile({ ...profile, [e.target.name]: e.target.value });
+  };
+
+  const handleSaveProfile = async (e) => {
+    e.preventDefault();
+    setProfileStatus({ success: '', error: '' });
+    try {
+      await axios.put('/api/user/profile', profile);
+      setProfileStatus({ success: 'Profile updated successfully!', error: '' });
+    } catch (error) {
+      setProfileStatus({ success: '', error: error.response?.data?.message || 'Failed to update profile.' });
+    }
+  };
+
+  const handlePasswordChange = (e) => {
+    setPasswords({ ...passwords, [e.target.name]: e.target.value });
+  };
+
+  const handleUpdatePassword = async (e) => {
+    e.preventDefault();
+    setPasswordStatus({ success: '', error: '' });
+    if (passwords.new !== passwords.confirm) {
+      setPasswordStatus({ success: '', error: 'New passwords do not match.' });
+      return;
+    }
+    try {
+      await axios.post('/api/auth/change-password', {
+        currentPassword: passwords.current,
+        newPassword: passwords.new
+      });
+      setPasswordStatus({ success: 'Password updated successfully!', error: '' });
+      setPasswords({ current: '', new: '', confirm: '' });
+    } catch (error) {
+      setPasswordStatus({ success: '', error: error.response?.data?.message || 'Failed to update password.' });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Settings</h1>
@@ -159,28 +217,40 @@ const Settings = () => {
               Profile Settings
             </h2>
           </div>
-          <div className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSaveProfile}>
             <Input
               label="Name"
+              name="name"
+              value={profile.name}
+              onChange={handleProfileChange}
               placeholder="Enter your name"
             />
             <Input
               label="Email"
+              name="email"
+              value={profile.email}
+              onChange={handleProfileChange}
               type="email"
               placeholder="Enter your email"
             />
             <Input
               label="Phone"
+              name="phone"
+              value={profile.phone}
+              onChange={handleProfileChange}
               placeholder="Enter your phone number"
             />
+            {profileStatus.success && <div className="text-green-600 text-sm">{profileStatus.success}</div>}
+            {profileStatus.error && <div className="text-red-600 text-sm">{profileStatus.error}</div>}
             <Button
               variant="primary"
               icon={Save}
               fullWidth
+              type="submit"
             >
               Save Changes
             </Button>
-          </div>
+          </form>
         </Card>
 
         {/* Notification Settings */}
@@ -196,6 +266,7 @@ const Settings = () => {
               <span className="text-gray-700 dark:text-gray-300">Email Notifications</span>
               <button
                 onClick={() => handleNotificationChange('email')}
+                type="button"
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                   notifications.email ? 'bg-primary-600' : 'bg-gray-200 dark:bg-gray-700'
                 }`}
@@ -211,6 +282,7 @@ const Settings = () => {
               <span className="text-gray-700 dark:text-gray-300">Push Notifications</span>
               <button
                 onClick={() => handleNotificationChange('push')}
+                type="button"
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                   notifications.push ? 'bg-primary-600' : 'bg-gray-200 dark:bg-gray-700'
                 }`}
@@ -226,6 +298,7 @@ const Settings = () => {
               <span className="text-gray-700 dark:text-gray-300">Weekly Reports</span>
               <button
                 onClick={() => handleNotificationChange('weeklyReport')}
+                type="button"
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                   notifications.weeklyReport ? 'bg-primary-600' : 'bg-gray-200 dark:bg-gray-700'
                 }`}
@@ -248,30 +321,42 @@ const Settings = () => {
               Security Settings
             </h2>
           </div>
-          <div className="space-y-4">
+          <form className="space-y-4" onSubmit={handleUpdatePassword}>
             <Input
               label="Current Password"
+              name="current"
               type="password"
+              value={passwords.current}
+              onChange={handlePasswordChange}
               placeholder="Enter current password"
             />
             <Input
               label="New Password"
+              name="new"
               type="password"
+              value={passwords.new}
+              onChange={handlePasswordChange}
               placeholder="Enter new password"
             />
             <Input
               label="Confirm New Password"
+              name="confirm"
               type="password"
+              value={passwords.confirm}
+              onChange={handlePasswordChange}
               placeholder="Confirm new password"
             />
+            {passwordStatus.success && <div className="text-green-600 text-sm">{passwordStatus.success}</div>}
+            {passwordStatus.error && <div className="text-red-600 text-sm">{passwordStatus.error}</div>}
             <Button
               variant="primary"
               icon={Save}
               fullWidth
+              type="submit"
             >
               Update Password
             </Button>
-          </div>
+          </form>
         </Card>
 
         {/* Preferences */}
@@ -287,6 +372,7 @@ const Settings = () => {
               <span className="text-gray-700 dark:text-gray-300">Dark Mode</span>
               <button
                 onClick={() => setIsDarkMode(!isDarkMode)}
+                type="button"
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                   isDarkMode ? 'bg-primary-600' : 'bg-gray-200 dark:bg-gray-700'
                 }`}
