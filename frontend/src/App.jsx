@@ -101,9 +101,6 @@ const Navigation = ({ children }) => {
   const drawer = (
     <Box sx={{ width: 240 }}>
       <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h6" component="div">
-          Budget Tracker
-        </Typography>
         <FormControlLabel
           control={
             <Switch 
