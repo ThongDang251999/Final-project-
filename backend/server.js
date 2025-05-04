@@ -37,15 +37,16 @@ app.use(fileUpload({
 }));
 
 // MongoDB Connection
-const MONGODB_URI = process.env.DB; // Using DB as in your .env file
+const MONGODB_URI = process.env.MONGODB_URI || process.env.DB; // Support both MONGODB_URI and DB for backward compatibility
 console.log('Environment variables loaded:', {
-  db: process.env.DB,
+  nodeEnv: process.env.NODE_ENV,
   port: process.env.PORT,
+  mongodbUri: MONGODB_URI ? '(set)' : '(not set)',
   jwtSecret: process.env.JWT_SECRET ? '(set)' : '(not set)'
 });
 
 if (!MONGODB_URI) {
-  console.error('MongoDB URI (DB) is not defined in environment variables!');
+  console.error('MongoDB URI is not defined in environment variables!');
   process.exit(1);
 }
 
@@ -74,7 +75,13 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Something went wrong!' });
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
 }); 
