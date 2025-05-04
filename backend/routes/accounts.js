@@ -112,4 +112,20 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
+// Export accounts to CSV
+router.get('/export', auth, async (req, res) => {
+  try {
+    const accounts = await Account.find({ userId: req.userId });
+    let csv = 'name,type,balance,currency,creditLimit,paymentDueDate\n';
+    accounts.forEach(account => {
+      csv += `${account.name},${account.type},${account.balance},${account.currency},${account.creditLimit || ''},${account.paymentDueDate ? new Date(account.paymentDueDate).toISOString().split('T')[0] : ''}\n`;
+    });
+    res.header('Content-Type', 'text/csv');
+    res.attachment('accounts.csv');
+    res.send(csv);
+  } catch (error) {
+    res.status(500).json({ message: 'Error exporting accounts', error: error.message });
+  }
+});
+
 module.exports = router; 

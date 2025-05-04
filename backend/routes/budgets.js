@@ -130,4 +130,20 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
+// Export budgets to CSV
+router.get('/export', auth, async (req, res) => {
+  try {
+    const budgets = await Budget.find({ userId: req.userId });
+    let csv = 'category,amount,period\n';
+    budgets.forEach(budget => {
+      csv += `${budget.category},${budget.amount},${budget.period}\n`;
+    });
+    res.header('Content-Type', 'text/csv');
+    res.attachment('budgets.csv');
+    res.send(csv);
+  } catch (error) {
+    res.status(500).json({ message: 'Error exporting budgets', error: error.message });
+  }
+});
+
 module.exports = router; 
