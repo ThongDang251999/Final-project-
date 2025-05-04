@@ -11,8 +11,13 @@ dotenv.config();
 const app = express();
 
 // Middleware
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://final-project-1-22hm.onrender.com'
+];
+
 app.use(cors({
-  origin: 'https://final-project-1-22nh.onrender.com', // your frontend Render URL
+  origin: allowedOrigins,
   credentials: true // only needed if you use cookies/sessions
 }));
 app.use(express.json());
