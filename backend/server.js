@@ -17,9 +17,19 @@ const allowedOrigins = [
 ];
 
 app.use(cors({
-  origin: allowedOrigins,
-  credentials: true // only needed if you use cookies/sessions
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
 }));
+// Add this line to handle preflight OPTIONS requests for all routes
+app.options('*', cors());
 app.use(express.json());
 app.use(fileUpload({
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max file size
