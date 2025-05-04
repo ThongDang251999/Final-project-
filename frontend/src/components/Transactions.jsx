@@ -240,12 +240,6 @@ export default function Transactions() {
           >
             Add Transaction
           </Button>
-          <Button
-            variant="secondary"
-            icon={Download}
-          >
-            Export
-          </Button>
         </div>
       </div>
 

@@ -98,6 +98,7 @@ export default function Register() {
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               error={!!formErrors.name}
               helperText={formErrors.name}
+              color="success"
             />
             <TextField
               margin="normal"
@@ -111,6 +112,7 @@ export default function Register() {
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               error={!!formErrors.email}
               helperText={formErrors.email}
+              color="success"
             />
             <TextField
               margin="normal"
@@ -125,6 +127,7 @@ export default function Register() {
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               error={!!formErrors.password}
               helperText={formErrors.password}
+              color="success"
             />
             <TextField
               margin="normal"
@@ -138,6 +141,7 @@ export default function Register() {
               onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
               error={!!formErrors.confirmPassword}
               helperText={formErrors.confirmPassword}
+              color="success"
             />
             <Button
               type="submit"
@@ -150,7 +154,7 @@ export default function Register() {
               {loading ? 'Signing up...' : 'Sign Up'}
             </Button>
             <Box sx={{ textAlign: 'center' }}>
-              <Link component={RouterLink} to="/login" variant="body2">
+              <Link component={RouterLink} to="/login" variant="body2" sx={{ color: 'success.main' }}>
                 {"Already have an account? Sign In"}
               </Link>
             </Box>

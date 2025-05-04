@@ -63,6 +63,7 @@ export default function Login() {
               autoFocus
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              color="success"
             />
             <TextField
               margin="normal"
@@ -75,18 +76,20 @@ export default function Login() {
               autoComplete="current-password"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              color="success"
             />
             <Button
               type="submit"
               fullWidth
               variant="contained"
+              color="success"
               sx={{ mt: 3, mb: 2 }}
               disabled={loading}
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
             <Box sx={{ textAlign: 'center' }}>
-              <Link component={RouterLink} to="/register" variant="body2">
+              <Link component={RouterLink} to="/register" variant="body2" sx={{ color: 'success.main' }}>
                 {"Don't have an account? Sign Up"}
               </Link>
             </Box>

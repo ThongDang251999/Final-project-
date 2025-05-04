@@ -202,12 +202,6 @@ export default function Dashboard() {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Box display="flex" justifyContent="flex-end" mb={2}>
-        <Button onClick={logout} variant="contained" color="secondary">
-          Logout
-        </Button>
-      </Box>
-      
       <Grid container spacing={3}>
         {/* Summary Cards */}
         <Grid item xs={12} md={4}>
