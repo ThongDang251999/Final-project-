@@ -14,4 +14,12 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: PORT
-        value: 10000 
+        value: 10000
+
+  - type: static
+    name: frontend
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://final-project-j6z0.onrender.com
