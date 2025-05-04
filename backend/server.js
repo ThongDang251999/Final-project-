@@ -11,7 +11,10 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'https://final-project-1-22nh.onrender.com', // your frontend Render URL
+  credentials: true // only needed if you use cookies/sessions
+}));
 app.use(express.json());
 app.use(fileUpload({
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max file size
