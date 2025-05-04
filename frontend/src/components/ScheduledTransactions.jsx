@@ -221,7 +221,7 @@ export default function ScheduledTransactions() {
         <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
           Scheduled Transactions
         </Typography>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => handleOpenDialog()}>
+        <Button variant="contained" color="success" startIcon={<AddIcon />} onClick={() => handleOpenDialog()}>
           Schedule Transaction
         </Button>
       </Box>

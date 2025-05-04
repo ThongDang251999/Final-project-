@@ -206,7 +206,7 @@ export default function Accounts() {
         <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
           Accounts
         </Typography>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => handleOpenDialog()}>
+        <Button variant="contained" color="success" startIcon={<AddIcon />} onClick={() => handleOpenDialog()}>
           Add Account
         </Button>
       </Box>

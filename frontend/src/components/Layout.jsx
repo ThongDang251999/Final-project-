@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, 
@@ -14,6 +14,7 @@ import {
   Sun,
   Moon
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const menuItems = [
   { text: 'Dashboard', icon: LayoutDashboard, path: '/' },
@@ -30,6 +31,8 @@ const Layout = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const darkMode = localStorage.getItem('darkMode') === 'true';
@@ -118,10 +121,11 @@ const Layout = ({ children }) => {
           </ul>
           <div className="absolute bottom-4 left-0 right-0 px-4">
             <button
-              className="sidebar-item w-full"
+              className="sidebar-item w-full text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
               onClick={() => {
-                // Handle logout
+                logout();
                 setIsMobileMenuOpen(false);
+                navigate('/login');
               }}
             >
               <LogOut className="w-5 h-5 mr-3" />
