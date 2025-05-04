@@ -67,14 +67,25 @@ app.use('/api/accounts', require('./routes/accounts'));
 app.use('/api/scheduled-transactions', require('./routes/scheduledTransactions'));
 app.use('/api/preferences', require('./routes/preferences'));
 
-// Serve static assets in production
-// (Removed because frontend is deployed separately on Render)
+// Catch-all for 404s on API routes (returns JSON, not HTML)
+app.use((req, res, next) => {
+  if (req.originalUrl.startsWith('/api/')) {
+    return res.status(404).json({ message: 'Not found' });
+  }
+  next();
+});
 
-// Error handling middleware
+// Error handling middleware (returns JSON for API routes)
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!' });
+  if (req.originalUrl.startsWith('/api/')) {
+    return res.status(err.status || 500).json({ message: err.message || 'Something went wrong!' });
+  }
+  res.status(500).send('Something went wrong!');
 });
+
+// Serve static assets in production
+// (Removed because frontend is deployed separately on Render)
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
