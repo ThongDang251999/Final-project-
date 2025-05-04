@@ -12,7 +12,8 @@ const app = express();
 
 // Middleware
 const allowedOrigins = [
-  'https://final-project-j6z0.onrender.com'
+  'http://localhost:3000',
+  'https://final-project-1-22hm.onrender.com', // your frontend static site
 ];
 
 app.use(cors({
