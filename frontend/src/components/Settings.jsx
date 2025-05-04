@@ -1,27 +1,19 @@
 import React, { useState } from 'react';
-import {
-  Container,
-  Paper,
-  Typography,
-  Box,
-  Divider,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Button,
-  Grid,
-  Switch,
-  FormControlLabel,
-  TextField,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Alert,
-  Snackbar
-} from '@mui/material';
+import { motion } from 'framer-motion';
+import { 
+  User, 
+  Bell, 
+  Lock, 
+  CreditCard, 
+  Globe, 
+  Moon, 
+  Sun,
+  Save
+} from 'lucide-react';
+import Card from './Card';
+import Button from './Button';
+import Input from './Input';
+import ProgressBar from './ProgressBar';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { usePreference } from '../context/PreferenceContext';
@@ -45,7 +37,7 @@ const DEFAULT_VIEWS = [
   { value: 'budgets', label: 'Budgets' }
 ];
 
-export default function Settings() {
+const Settings = () => {
   const { logout, user } = useAuth();
   const { preference, updatePreference } = usePreference();
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -59,6 +51,12 @@ export default function Settings() {
     severity: 'success'
   });
   const [error, setError] = useState(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [notifications, setNotifications] = useState({
+    email: true,
+    push: true,
+    weeklyReport: true
+  });
 
   const handlePreferenceChange = async (e) => {
     const { name, value } = e.target;
@@ -141,200 +139,188 @@ export default function Settings() {
     setSnackbar({ ...snackbar, open: false });
   };
 
+  const handleNotificationChange = (type) => {
+    setNotifications(prev => ({
+      ...prev,
+      [type]: !prev[type]
+    }));
+  };
+
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h4" component="h1" sx={{ mb: 4, fontWeight: 'bold' }}>
-        Settings
-      </Typography>
-      
-      <Grid container spacing={3}>
-        {/* Appearance Settings */}
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3, backgroundColor: 'white', borderRadius: 2 }}>
-            <Typography variant="h6" sx={{ mb: 3 }}>Appearance</Typography>
-            
-            <Box sx={{ mb: 3 }}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={preference.theme === 'dark'}
-                    onChange={handleThemeChange}
-                  />
-                }
-                label="Dark Mode"
-              />
-            </Box>
-            
-            <FormControl fullWidth sx={{ mb: 3 }}>
-              <InputLabel>Default Currency</InputLabel>
-              <Select
-                name="currency"
-                value={preference.currency}
-                onChange={handlePreferenceChange}
-                label="Default Currency"
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Settings</h1>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Profile Settings */}
+        <Card>
+          <div className="flex items-center space-x-3 mb-6">
+            <User className="w-6 h-6 text-primary-600" />
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Profile Settings
+            </h2>
+          </div>
+          <div className="space-y-4">
+            <Input
+              label="Name"
+              placeholder="Enter your name"
+            />
+            <Input
+              label="Email"
+              type="email"
+              placeholder="Enter your email"
+            />
+            <Input
+              label="Phone"
+              placeholder="Enter your phone number"
+            />
+            <Button
+              variant="primary"
+              icon={Save}
+              fullWidth
+            >
+              Save Changes
+            </Button>
+          </div>
+        </Card>
+
+        {/* Notification Settings */}
+        <Card>
+          <div className="flex items-center space-x-3 mb-6">
+            <Bell className="w-6 h-6 text-primary-600" />
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Notification Settings
+            </h2>
+          </div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-700 dark:text-gray-300">Email Notifications</span>
+              <button
+                onClick={() => handleNotificationChange('email')}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  notifications.email ? 'bg-primary-600' : 'bg-gray-200 dark:bg-gray-700'
+                }`}
               >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    notifications.email ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-700 dark:text-gray-300">Push Notifications</span>
+              <button
+                onClick={() => handleNotificationChange('push')}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  notifications.push ? 'bg-primary-600' : 'bg-gray-200 dark:bg-gray-700'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    notifications.push ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-700 dark:text-gray-300">Weekly Reports</span>
+              <button
+                onClick={() => handleNotificationChange('weeklyReport')}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  notifications.weeklyReport ? 'bg-primary-600' : 'bg-gray-200 dark:bg-gray-700'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    notifications.weeklyReport ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+        </Card>
+
+        {/* Security Settings */}
+        <Card>
+          <div className="flex items-center space-x-3 mb-6">
+            <Lock className="w-6 h-6 text-primary-600" />
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Security Settings
+            </h2>
+          </div>
+          <div className="space-y-4">
+            <Input
+              label="Current Password"
+              type="password"
+              placeholder="Enter current password"
+            />
+            <Input
+              label="New Password"
+              type="password"
+              placeholder="Enter new password"
+            />
+            <Input
+              label="Confirm New Password"
+              type="password"
+              placeholder="Confirm new password"
+            />
+            <Button
+              variant="primary"
+              icon={Save}
+              fullWidth
+            >
+              Update Password
+            </Button>
+          </div>
+        </Card>
+
+        {/* Preferences */}
+        <Card>
+          <div className="flex items-center space-x-3 mb-6">
+            <Globe className="w-6 h-6 text-primary-600" />
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Preferences
+            </h2>
+          </div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-700 dark:text-gray-300">Dark Mode</span>
+              <button
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  isDarkMode ? 'bg-primary-600' : 'bg-gray-200 dark:bg-gray-700'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    isDarkMode ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-700 dark:text-gray-300">Currency</span>
+              <select className="input w-32">
                 {CURRENCIES.map((currency) => (
-                  <MenuItem key={currency.value} value={currency.value}>
+                  <option key={currency.value} value={currency.value}>
                     {currency.label}
-                  </MenuItem>
+                  </option>
                 ))}
-              </Select>
-            </FormControl>
-            
-            <FormControl fullWidth sx={{ mb: 3 }}>
-              <InputLabel>Date Format</InputLabel>
-              <Select
-                name="dateFormat"
-                value={preference.dateFormat}
-                onChange={handlePreferenceChange}
-                label="Date Format"
-              >
-                {DATE_FORMATS.map((format) => (
-                  <MenuItem key={format.value} value={format.value}>
-                    {format.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            
-            <FormControl fullWidth>
-              <InputLabel>Default View</InputLabel>
-              <Select
-                name="defaultView"
-                value={preference.defaultView}
-                onChange={handlePreferenceChange}
-                label="Default View"
-              >
-                {DEFAULT_VIEWS.map((view) => (
-                  <MenuItem key={view.value} value={view.value}>
-                    {view.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Paper>
-        </Grid>
-        
-        {/* Account Settings */}
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3, backgroundColor: 'white', borderRadius: 2 }}>
-            <Typography variant="h6" sx={{ mb: 3 }}>Account</Typography>
-            
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="body1" sx={{ fontWeight: 'medium' }}>Email</Typography>
-              <Typography variant="body2" color="text.secondary">{user?.email || 'Loading...'}</Typography>
-            </Box>
-            
-            <Divider sx={{ my: 3 }} />
-            
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="body1" sx={{ fontWeight: 'medium', mb: 1 }}>Security</Typography>
-              <Button 
-                variant="outlined" 
-                onClick={() => setOpenPasswordDialog(true)}
-                sx={{ mb: 2 }}
-              >
-                Change Password
-              </Button>
-            </Box>
-            
-            <Divider sx={{ my: 3 }} />
-            
-            <Box>
-              <Typography variant="body1" sx={{ fontWeight: 'medium', mb: 1, color: 'error.main' }}>Danger Zone</Typography>
-              <Button 
-                variant="outlined" 
-                color="error"
-                onClick={() => setOpenDeleteDialog(true)}
-              >
-                Delete Account
-              </Button>
-            </Box>
-          </Paper>
-        </Grid>
-      </Grid>
-      
-      {/* Delete Account Dialog */}
-      <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
-        <DialogTitle>Confirm Account Deletion</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Are you sure you want to delete your account? This action cannot be undone, and all your data will be permanently deleted.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
-          <Button 
-            color="error" 
-            onClick={() => {
-              setOpenDeleteDialog(false);
-              logout();
-            }}
-          >
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
-      
-      {/* Change Password Dialog */}
-      <Dialog open={openPasswordDialog} onClose={() => setOpenPasswordDialog(false)}>
-        <DialogTitle>Change Password</DialogTitle>
-        <DialogContent>
-          {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {error}
-            </Alert>
-          )}
-          <DialogContentText sx={{ mb: 2 }}>
-            Please enter your current password and new password.
-          </DialogContentText>
-          <TextField
-            fullWidth
-            label="Current Password"
-            type="password"
-            value={currentPassword}
-            onChange={(e) => setCurrentPassword(e.target.value)}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            fullWidth
-            label="New Password"
-            type="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            fullWidth
-            label="Confirm New Password"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenPasswordDialog(false)}>Cancel</Button>
-          <Button onClick={handleChangePassword} variant="contained">
-            Change Password
-          </Button>
-        </DialogActions>
-      </Dialog>
-      
-      {/* Notification Snackbar */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={5000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={snackbar.severity}
-          sx={{ width: '100%' }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
-    </Container>
+              </select>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-700 dark:text-gray-300">Language</span>
+              <select className="input w-32">
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+              </select>
+            </div>
+          </div>
+        </Card>
+      </div>
+    </div>
   );
-} 
+};
+
+export default Settings; 

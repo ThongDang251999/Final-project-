@@ -43,6 +43,7 @@ import CreditCards from './components/CreditCards';
 import ImportExport from './components/ImportExport';
 import Settings from './components/Settings';
 import { PreferenceProvider, usePreference } from './context/PreferenceContext';
+import Layout from './components/Layout';
 
 // Create a theme based on user preference
 const createAppTheme = (mode) => createTheme({
@@ -208,26 +209,12 @@ const Navigation = ({ children }) => {
 
 const PrivateRoute = ({ children }) => {
   const { token } = useAuth();
-  return token ? <Navigation>{children}</Navigation> : <Navigate to="/login" />;
+  return token ? <Layout>{children}</Layout> : <Navigate to="/login" />;
 };
 
 function App() {
   return (
     <AuthProvider>
-      <PreferenceProvider>
-        <AppContent />
-      </PreferenceProvider>
-    </AuthProvider>
-  );
-}
-
-function AppContent() {
-  const { preference } = usePreference();
-  const theme = createAppTheme(preference?.theme || 'light');
-
-  return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
@@ -237,14 +224,6 @@ function AppContent() {
             element={
               <PrivateRoute>
                 <Dashboard />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/budgets"
-            element={
-              <PrivateRoute>
-                <Budgets />
               </PrivateRoute>
             }
           />
@@ -281,6 +260,14 @@ function AppContent() {
             }
           />
           <Route
+            path="/budgets"
+            element={
+              <PrivateRoute>
+                <Budgets />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/import-export"
             element={
               <PrivateRoute>
@@ -298,7 +285,7 @@ function AppContent() {
           />
         </Routes>
       </Router>
-    </ThemeProvider>
+    </AuthProvider>
   );
 }
 

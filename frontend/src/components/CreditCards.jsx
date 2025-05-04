@@ -23,6 +23,14 @@ import EditIcon from '@mui/icons-material/Edit';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { usePreference } from '../context/PreferenceContext';
+import { motion } from 'framer-motion';
+import { Plus, CreditCard, TrendingUp, AlertCircle } from 'lucide-react';
+import CardComponent from './Card';
+import ButtonComponent from './Button';
+import ProgressBar from './ProgressBar';
+import Modal from './Modal';
+import Input from './Input';
+import Skeleton from './Skeleton';
 
 export default function CreditCards() {
   const { logout } = useAuth();
@@ -34,6 +42,8 @@ export default function CreditCards() {
   const [paymentAmount, setPaymentAmount] = useState('');
   const [totalCreditUsed, setTotalCreditUsed] = useState(0);
   const [totalCreditLimit, setTotalCreditLimit] = useState(0);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchCreditCards = async () => {
     try {
@@ -152,238 +162,152 @@ export default function CreditCards() {
     return 'error';
   };
 
+  // Simulate loading
+  setTimeout(() => {
+    setIsLoading(false);
+  }, 1500);
+
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h4" component="h1" sx={{ mb: 4, fontWeight: 'bold' }}>
-        Credit Cards
-      </Typography>
-      
-      {/* Credit Usage Summary */}
-      <Paper sx={{ p: 3, mb: 4, backgroundColor: 'white', borderRadius: 2 }}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <Typography variant="h6" sx={{ mb: 1 }}>Total Credit Usage</Typography>
-            <Typography variant="h3" sx={{ 
-              fontWeight: 'bold', 
-              color: getProgressColor(getUsagePercentage(totalCreditUsed, totalCreditLimit)) === 'error' 
-                ? '#d32f2f' 
-                : getProgressColor(getUsagePercentage(totalCreditUsed, totalCreditLimit)) === 'warning'
-                  ? '#ff9800'
-                  : '#2E7D32'
-            }}>
-              {totalCreditLimit > 0 
-                ? `${(getUsagePercentage(totalCreditUsed, totalCreditLimit)).toFixed(1)}%`
-                : '0%'
-              }
-            </Typography>
-            <LinearProgress 
-              variant="determinate" 
-              value={totalCreditLimit > 0 ? Math.min(getUsagePercentage(totalCreditUsed, totalCreditLimit), 100) : 0} 
-              color={getProgressColor(getUsagePercentage(totalCreditUsed, totalCreditLimit))}
-              sx={{ height: 10, borderRadius: 5, mt: 2 }}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Box sx={{ display: 'flex', height: '100%', flexDirection: 'column', justifyContent: 'center' }}>
-              <Typography variant="body1" sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                <span>Total Credit Limit:</span>
-                <span>{formatCurrency(totalCreditLimit, preference.currency)}</span>
-              </Typography>
-              <Typography variant="body1" sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                <span>Total Balance:</span>
-                <span>{formatCurrency(totalCreditUsed, preference.currency)}</span>
-              </Typography>
-              <Typography variant="body1" sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span>Available Credit:</span>
-                <span>{formatCurrency(totalCreditLimit - totalCreditUsed, preference.currency)}</span>
-              </Typography>
-            </Box>
-          </Grid>
-        </Grid>
-      </Paper>
-      
-      {/* Credit Cards List */}
-      <Grid container spacing={3}>
-        {creditCards.length > 0 ? (
-          creditCards.map((card) => {
-            const usagePercentage = getUsagePercentage(card.balance, card.creditLimit);
-            const daysUntilDue = getDaysUntilDue(card.paymentDueDate);
-            
-            return (
-              <Grid item xs={12} md={6} key={card._id}>
-                <Card sx={{ 
-                  borderRadius: 2,
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                  background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
-                  color: 'white'
-                }}>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                      <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center' }}>
-                        <CreditCardIcon sx={{ mr: 1 }} />
-                        {card.name}
-                      </Typography>
-                      <Typography variant="body2">
-                        {card.currency}
-                      </Typography>
-                    </Box>
-                    
-                    <Box sx={{ mb: 3 }}>
-                      <Typography variant="body2" sx={{ mb: 0.5 }}>Current Balance</Typography>
-                      <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
-                        {formatCurrency(card.balance, card.currency)}
-                      </Typography>
-                    </Box>
-                    
-                    <Grid container spacing={2}>
-                      <Grid item xs={6}>
-                        <Typography variant="body2">Credit Limit</Typography>
-                        <Typography variant="h6">
-                          {formatCurrency(card.creditLimit, card.currency)}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="body2">Available</Typography>
-                        <Typography variant="h6">
-                          {formatCurrency(card.creditLimit - card.balance, card.currency)}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                    
-                    <Divider sx={{ my: 2, borderColor: 'rgba(255,255,255,0.3)' }} />
-                    
-                    <Box sx={{ mb: 2 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                        <Typography variant="body2">Usage</Typography>
-                        <Typography variant="body2">{usagePercentage.toFixed(1)}%</Typography>
-                      </Box>
-                      <LinearProgress 
-                        variant="determinate" 
-                        value={Math.min(usagePercentage, 100)} 
-                        color={getProgressColor(usagePercentage)}
-                        sx={{ height: 8, borderRadius: 4, bgcolor: 'rgba(255,255,255,0.2)' }}
-                      />
-                    </Box>
-                    
-                    <Typography variant="body2" sx={{ 
-                      color: daysUntilDue <= 3 ? '#ff9800' : daysUntilDue <= 0 ? '#f44336' : 'inherit',
-                      fontWeight: daysUntilDue <= 3 ? 'bold' : 'normal'
-                    }}>
-                      {daysUntilDue <= 0 
-                        ? `Payment past due by ${Math.abs(daysUntilDue)} days!` 
-                        : `Payment due in ${daysUntilDue} days (${new Date(card.paymentDueDate).toLocaleDateString()})`
-                      }
-                    </Typography>
-                  </CardContent>
-                  <CardActions sx={{ bgcolor: 'rgba(0,0,0,0.2)', justifyContent: 'space-between', p: 2 }}>
-                    <Button 
-                      size="small" 
-                      startIcon={<PaymentIcon />} 
-                      variant="contained"
-                      onClick={() => handleOpenPaymentDialog(card)}
-                      sx={{ bgcolor: 'white', color: '#1e3c72', '&:hover': { bgcolor: '#f5f5f5' } }}
-                    >
-                      Make Payment
-                    </Button>
-                    <Button 
-                      size="small" 
-                      startIcon={<EditIcon />}
-                      variant="outlined"
-                      onClick={() => handleOpenEditDialog(card)}
-                      sx={{ borderColor: 'white', color: 'white', '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' } }}
-                    >
-                      Edit
-                    </Button>
-                  </CardActions>
-                </Card>
-              </Grid>
-            );
-          })
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Credit Cards</h1>
+        <ButtonComponent
+          variant="primary"
+          icon={Plus}
+          onClick={() => setIsAddModalOpen(true)}
+        >
+          Add Credit Card
+        </ButtonComponent>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {isLoading ? (
+          [...Array(2)].map((_, index) => (
+            <CardComponent key={index}>
+              <Skeleton variant="text" count={4} />
+            </CardComponent>
+          ))
         ) : (
-          <Grid item xs={12}>
-            <Paper sx={{ p: 3, textAlign: 'center' }}>
-              <Typography variant="body1">
-                No credit cards set up yet. Add one from the Accounts section!
-              </Typography>
-            </Paper>
-          </Grid>
+          creditCards.map((card) => (
+            <CardComponent key={card._id}>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <CreditCard className="w-6 h-6 text-primary-600" />
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        {card.name}
+                      </h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {card.currency}
+                      </p>
+                    </div>
+                  </div>
+                  {card.balance / card.creditLimit > 0.8 && (
+                    <AlertCircle className="w-5 h-5 text-yellow-500" />
+                  )}
+                </div>
+
+                <ProgressBar
+                  value={card.balance}
+                  max={card.creditLimit}
+                  label={`$${card.balance} of $${card.creditLimit}`}
+                  color={card.balance / card.creditLimit > 0.8 ? 'red' : 'primary'}
+                />
+
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-gray-500 dark:text-gray-400">Available Credit</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {formatCurrency(card.creditLimit - card.balance, card.currency)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 dark:text-gray-400">Due Date</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {new Date(card.paymentDueDate).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <ButtonComponent
+                    variant="secondary"
+                    size="sm"
+                  >
+                    View Details
+                  </ButtonComponent>
+                </div>
+              </div>
+            </CardComponent>
+          ))
         )}
-      </Grid>
-      
-      {/* Payment Dialog */}
-      <Dialog open={openPaymentDialog} onClose={handleCloseDialogs} maxWidth="xs" fullWidth>
-        <DialogTitle>Make a Payment to {currentCard?.name}</DialogTitle>
-        <DialogContent>
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="body2" gutterBottom>
-              Current Balance: {currentCard && formatCurrency(currentCard.balance, currentCard.currency)}
-            </Typography>
-            <TextField
-              fullWidth
-              label="Payment Amount"
-              type="number"
-              value={paymentAmount}
-              onChange={(e) => setPaymentAmount(e.target.value)}
-              InputProps={{ inputProps: { min: 0, max: currentCard?.balance } }}
-              sx={{ mt: 2 }}
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialogs}>Cancel</Button>
-          <Button 
-            onClick={handleMakePayment} 
-            variant="contained"
-            disabled={!paymentAmount || Number(paymentAmount) <= 0 || Number(paymentAmount) > (currentCard?.balance || 0)}
+      </div>
+
+      <CardComponent>
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Credit Score
+            </h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Track your credit score and history
+            </p>
+          </div>
+          <ButtonComponent
+            variant="secondary"
+            icon={TrendingUp}
           >
-            Make Payment
-          </Button>
-        </DialogActions>
-      </Dialog>
-      
-      {/* Edit Dialog */}
-      <Dialog open={openEditDialog} onClose={handleCloseDialogs} maxWidth="xs" fullWidth>
-        <DialogTitle>Edit {currentCard?.name}</DialogTitle>
-        <DialogContent>
-          <Box sx={{ mt: 2 }}>
-            <TextField
-              fullWidth
-              label="Card Name"
-              name="name"
-              value={currentCard?.name || ''}
-              onChange={handleInputChange}
-              sx={{ mb: 2 }}
+            View Details
+          </ButtonComponent>
+        </div>
+      </CardComponent>
+
+      <Modal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        title="Add New Credit Card"
+      >
+        <form className="space-y-4">
+          <Input
+            label="Card Name"
+            placeholder="Enter card name"
+          />
+          <Input
+            label="Card Number"
+            placeholder="Enter card number"
+          />
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Expiry Date"
+              type="month"
             />
-            <TextField
-              fullWidth
-              label="Credit Limit"
-              name="creditLimit"
-              type="number"
-              value={currentCard?.creditLimit || ''}
-              onChange={handleInputChange}
-              sx={{ mb: 2 }}
+            <Input
+              label="CVV"
+              placeholder="123"
             />
-            <TextField
-              fullWidth
-              label="Payment Due Date"
-              name="paymentDueDate"
-              type="date"
-              value={currentCard?.paymentDueDate || ''}
-              onChange={handleInputChange}
-              InputLabelProps={{ shrink: true }}
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialogs}>Cancel</Button>
-          <Button 
-            onClick={handleUpdateCard} 
-            variant="contained"
-          >
-            Update
-          </Button>
-        </DialogActions>
-      </Dialog>
+          </div>
+          <Input
+            label="Credit Limit"
+            type="number"
+            placeholder="0.00"
+          />
+          <div className="flex justify-end space-x-3 mt-6">
+            <ButtonComponent
+              variant="secondary"
+              onClick={() => setIsAddModalOpen(false)}
+            >
+              Cancel
+            </ButtonComponent>
+            <ButtonComponent
+              variant="primary"
+              type="submit"
+            >
+              Add Card
+            </ButtonComponent>
+          </div>
+        </form>
+      </Modal>
     </Container>
   );
 } 

@@ -23,6 +23,13 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { motion } from 'framer-motion';
+import { Plus, Settings, TrendingUp } from 'lucide-react';
+import Card from './Card';
+import ProgressBar from './ProgressBar';
+import Modal from './Modal';
+import Input from './Input';
+import Skeleton from './Skeleton';
 
 const CATEGORIES = ['Food & Drinks', 'Transportation', 'Shopping', 'Entertainment'];
 
@@ -38,6 +45,8 @@ export default function Budgets() {
   const [isEditing, setIsEditing] = useState(false);
   const [expenses, setExpenses] = useState({});
   const [error, setError] = useState(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Fetch all budgets
   const fetchBudgets = async () => {
@@ -156,136 +165,125 @@ export default function Budgets() {
     return 'error';
   };
 
+  // Simulate loading
+  setTimeout(() => {
+    setIsLoading(false);
+  }, 1500);
+
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
-          Budget Management
-        </Typography>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => handleOpenDialog()}>
-          Add Budget
-        </Button>
-      </Box>
-      
-      <Grid container spacing={3}>
-        {budgets.length > 0 ? (
-          budgets.map((budget) => {
-            const usagePercentage = calculateUsage(budget);
-            const color = getColorByUsage(usagePercentage);
-            const spent = expenses[budget.category] || 0;
-            
-            return (
-              <Grid item xs={12} md={6} key={budget._id}>
-                <Paper sx={{ p: 3, backgroundColor: 'white', borderRadius: 2 }}>
-                  <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-                    <Typography variant="h6" sx={{ fontWeight: 'medium' }}>
-                      {budget.category}
-                    </Typography>
-                    <Box>
-                      <IconButton size="small" onClick={() => handleOpenDialog(budget)}>
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton size="small" onClick={() => handleDelete(budget._id)}>
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Box>
-                  </Box>
-                  
-                  <Typography variant="body2" color="text.secondary" mb={1}>
-                    Budget: ${budget.amount} ({budget.period})
-                  </Typography>
-                  
-                  <Box display="flex" justifyContent="space-between" mb={1}>
-                    <Typography variant="body2">
-                      Spent: ${spent.toFixed(2)}
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: usagePercentage > 100 ? 'error.main' : 'inherit' }}>
-                      {usagePercentage.toFixed(0)}% used
-                    </Typography>
-                  </Box>
-                  
-                  <LinearProgress 
-                    variant="determinate" 
-                    value={usagePercentage} 
-                    color={color}
-                    sx={{ height: 10, borderRadius: 5 }}
-                  />
-                  
-                  {usagePercentage > 100 && (
-                    <Typography variant="body2" color="error.main" sx={{ mt: 1 }}>
-                      Budget exceeded by ${(spent - budget.amount).toFixed(2)}
-                    </Typography>
-                  )}
-                </Paper>
-              </Grid>
-            );
-          })
-        ) : (
-          <Grid item xs={12}>
-            <Paper sx={{ p: 3, textAlign: 'center' }}>
-              <Typography variant="body1">
-                No budgets set up yet. Add your first budget to start tracking your spending!
-              </Typography>
-            </Paper>
-          </Grid>
-        )}
-      </Grid>
-      
-      {/* Add/Edit Budget Dialog */}
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>{isEditing ? 'Edit Budget' : 'Add New Budget'}</DialogTitle>
-        <DialogContent sx={{ minWidth: 400 }}>
-          {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {error}
-            </Alert>
-          )}
-          
-          <FormControl fullWidth sx={{ mt: 2, mb: 2 }}>
-            <Select
-              value={currentBudget.category}
-              name="category"
-              onChange={handleInputChange}
-              displayEmpty
-              renderValue={selected => selected || "Select Category"}
-            >
-              {CATEGORIES.map(category => (
-                <MenuItem key={category} value={category}>
-                  {category}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          
-          <TextField
-            fullWidth
-            label="Budget Amount"
-            type="number"
-            name="amount"
-            value={currentBudget.amount}
-            onChange={handleInputChange}
-            sx={{ mb: 2 }}
-          />
-          
-          <FormControl fullWidth sx={{ mb: 2 }}>
-            <Select
-              value={currentBudget.period}
-              name="period"
-              onChange={handleInputChange}
-            >
-              <MenuItem value="weekly">Weekly</MenuItem>
-              <MenuItem value="monthly">Monthly</MenuItem>
-              <MenuItem value="yearly">Yearly</MenuItem>
-            </Select>
-          </FormControl>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={handleSubmit} variant="contained">
-            {isEditing ? 'Update' : 'Add'}
+    <div className="space-y-6">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Budgets</h1>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Button
+            variant="primary"
+            icon={Plus}
+            onClick={() => setIsAddModalOpen(true)}
+          >
+            Add Budget
           </Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+          <Button
+            variant="secondary"
+            icon={Settings}
+          >
+            Budget Settings
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {isLoading ? (
+          [...Array(6)].map((_, index) => (
+            <Card key={index}>
+              <Skeleton variant="text" count={3} />
+            </Card>
+          ))
+        ) : (
+          budgets.map((budget) => (
+            <Card key={budget._id}>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    {budget.category}
+                  </h3>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    {budget.period}
+                  </span>
+                </div>
+                <ProgressBar
+                  value={budget.spent}
+                  max={budget.amount}
+                  label={`$${budget.spent} of $${budget.amount}`}
+                  color={budget.spent > budget.amount ? 'red' : 'primary'}
+                />
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600 dark:text-gray-400">
+                    {((budget.spent / budget.amount) * 100).toFixed(1)}% spent
+                  </span>
+                  <span className="text-gray-600 dark:text-gray-400">
+                    ${budget.amount - budget.spent} remaining
+                  </span>
+                </div>
+              </div>
+            </Card>
+          ))
+        )}
+      </div>
+
+      <Card>
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Budget Overview
+            </h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Track your spending across all categories
+            </p>
+          </div>
+          <Button
+            variant="secondary"
+            icon={TrendingUp}
+          >
+            View Details
+          </Button>
+        </div>
+      </Card>
+
+      <Modal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        title="Add New Budget"
+      >
+        <form className="space-y-4">
+          <Input
+            label="Category"
+            placeholder="Select category"
+          />
+          <Input
+            label="Amount"
+            type="number"
+            placeholder="0.00"
+          />
+          <Input
+            label="Period"
+            type="month"
+          />
+          <div className="flex justify-end space-x-3 mt-6">
+            <Button
+              variant="secondary"
+              onClick={() => setIsAddModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              type="submit"
+            >
+              Add Budget
+            </Button>
+          </div>
+        </form>
+      </Modal>
+    </div>
   );
 } 

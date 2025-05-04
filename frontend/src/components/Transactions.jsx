@@ -31,6 +31,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { motion } from 'framer-motion';
+import { Plus, Search, Filter, Download } from 'lucide-react';
+import Card from './Card';
+import Table from './Table';
+import Input from './Input';
+import Skeleton from './Skeleton';
+import Modal from './Modal';
 
 const CATEGORIES = ['Food & Drinks', 'Transportation', 'Shopping', 'Entertainment'];
 
@@ -56,6 +63,9 @@ export default function Transactions() {
     type: '',
     accountId: ''
   });
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Fetch all transactions
   const fetchTransactions = async () => {
@@ -194,281 +204,125 @@ export default function Transactions() {
     fetchTransactions();
   };
 
+  // Simulate loading
+  setTimeout(() => {
+    setIsLoading(false);
+  }, 1500);
+
+  const tableHeaders = ['Date', 'Description', 'Category', 'Amount', 'Account', 'Actions'];
+  const tableData = transactions.map(transaction => [
+    new Date(transaction.date).toLocaleDateString(),
+    transaction.description,
+    transaction.category,
+    <span className={transaction.amount >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
+      {transaction.amount >= 0 ? '+' : ''}{transaction.amount.toFixed(2)}
+    </span>,
+    transaction.accountId?.name || getAccountName(transaction.accountId),
+    <div className="flex space-x-2">
+      <button className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+        Edit
+      </button>
+      <button className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
+        Delete
+      </button>
+    </div>
+  ]);
+
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
-          Transactions
-        </Typography>
-        <Box>
-          <Button 
-            variant="outlined" 
-            startIcon={<FilterListIcon />} 
-            onClick={() => setShowFilters(!showFilters)}
-            sx={{ mr: 2 }}
+    <div className="space-y-6">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Transactions</h1>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Button
+            variant="primary"
+            icon={Plus}
+            onClick={() => setIsAddModalOpen(true)}
+          >
+            Add Transaction
+          </Button>
+          <Button
+            variant="secondary"
+            icon={Download}
+          >
+            Export
+          </Button>
+        </div>
+      </div>
+
+      <Card>
+        <div className="flex flex-col md:flex-row gap-4 mb-6">
+          <div className="relative flex-1">
+            <Input
+              placeholder="Search transactions..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              icon={Search}
+            />
+          </div>
+          <Button
+            variant="secondary"
+            icon={Filter}
           >
             Filters
           </Button>
-          <Button variant="contained" startIcon={<AddIcon />} onClick={() => handleOpenDialog()}>
-            Add Transaction
-          </Button>
-        </Box>
-      </Box>
-      
-      {showFilters && (
-        <Paper sx={{ p: 3, mb: 3, backgroundColor: 'white', borderRadius: 2 }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>Filter Transactions</Typography>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} sm={6} md={3}>
-              <TextField
-                fullWidth
-                label="Start Date"
-                type="date"
-                name="startDate"
-                value={filters.startDate}
-                onChange={handleFilterChange}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <TextField
-                fullWidth
-                label="End Date"
-                type="date"
-                name="endDate"
-                value={filters.endDate}
-                onChange={handleFilterChange}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={2}>
-              <FormControl fullWidth>
-                <InputLabel>Category</InputLabel>
-                <Select
-                  name="category"
-                  value={filters.category}
-                  onChange={handleFilterChange}
-                  label="Category"
-                >
-                  <MenuItem value="">All</MenuItem>
-                  {CATEGORIES.map((category) => (
-                    <MenuItem key={category} value={category}>{category}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6} md={2}>
-              <FormControl fullWidth>
-                <InputLabel>Type</InputLabel>
-                <Select
-                  name="type"
-                  value={filters.type}
-                  onChange={handleFilterChange}
-                  label="Type"
-                >
-                  <MenuItem value="">All</MenuItem>
-                  <MenuItem value="income">Income</MenuItem>
-                  <MenuItem value="expense">Expense</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6} md={2}>
-              <FormControl fullWidth>
-                <InputLabel>Account</InputLabel>
-                <Select
-                  name="accountId"
-                  value={filters.accountId}
-                  onChange={handleFilterChange}
-                  label="Account"
-                >
-                  <MenuItem value="">All</MenuItem>
-                  {accounts.map((account) => (
-                    <MenuItem key={account._id} value={account._id}>{account.name}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Button 
-                variant="contained" 
-                fullWidth 
-                onClick={applyFilters}
-              >
-                Apply Filters
-              </Button>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Button 
-                variant="outlined" 
-                fullWidth 
-                onClick={clearFilters}
-              >
-                Clear Filters
-              </Button>
-            </Grid>
-          </Grid>
-        </Paper>
-      )}
-      
-      <Paper sx={{ p: 3, backgroundColor: 'white', borderRadius: 2 }}>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Date</TableCell>
-                <TableCell>Account</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell>Category</TableCell>
-                <TableCell align="right">Amount</TableCell>
-                <TableCell>Rating</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {transactions.length > 0 ? (
-                transactions.map((transaction) => (
-                  <TableRow key={transaction._id}>
-                    <TableCell>{new Date(transaction.date).toLocaleDateString()}</TableCell>
-                    <TableCell>
-                      {transaction.accountId?.name || getAccountName(transaction.accountId)}
-                    </TableCell>
-                    <TableCell>{transaction.description}</TableCell>
-                    <TableCell>
-                      <Chip label={transaction.category} size="small" />
-                    </TableCell>
-                    <TableCell align="right" sx={{ color: transaction.type === 'income' ? '#2E7D32' : '#d32f2f' }}>
-                      {transaction.type === 'income' ? '+' : '-'}${Number(transaction.amount).toFixed(2)}
-                    </TableCell>
-                    <TableCell>
-                      <Rating 
-                        value={transaction.rating || 0} 
-                        readOnly
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <IconButton size="small" onClick={() => handleOpenDialog(transaction)}>
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton size="small" onClick={() => handleDelete(transaction._id)}>
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={7} align="center">No transactions found</TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Paper>
-      
-      {/* Add/Edit Transaction Dialog */}
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>{isEditing ? 'Edit Transaction' : 'Add New Transaction'}</DialogTitle>
-        <DialogContent>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Amount"
-                type="number"
-                name="amount"
-                value={currentTransaction.amount}
-                onChange={handleInputChange}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel>Type</InputLabel>
-                <Select
-                  name="type"
-                  value={currentTransaction.type}
-                  onChange={handleInputChange}
-                  label="Type"
-                >
-                  <MenuItem value="income">Income</MenuItem>
-                  <MenuItem value="expense">Expense</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12}>
-              <FormControl fullWidth>
-                <InputLabel>Account</InputLabel>
-                <Select
-                  name="accountId"
-                  value={currentTransaction.accountId}
-                  onChange={handleInputChange}
-                  label="Account"
-                  required
-                >
-                  {accounts.map((account) => (
-                    <MenuItem key={account._id} value={account._id}>{account.name}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12}>
-              <FormControl fullWidth>
-                <InputLabel>Category</InputLabel>
-                <Select
-                  name="category"
-                  value={currentTransaction.category}
-                  onChange={handleInputChange}
-                  label="Category"
-                >
-                  {CATEGORIES.map((category) => (
-                    <MenuItem key={category} value={category}>{category}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Description"
-                name="description"
-                value={currentTransaction.description}
-                onChange={handleInputChange}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Date"
-                type="date"
-                name="date"
-                value={currentTransaction.date}
-                onChange={handleInputChange}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Box>
-                <Typography component="legend">Rating</Typography>
-                <Rating
-                  name="rating"
-                  value={currentTransaction.rating || 0}
-                  onChange={(event, newValue) => handleRatingChange(newValue)}
-                />
-              </Box>
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button 
-            onClick={handleSubmit}
-            variant="contained"
-            disabled={!currentTransaction.amount || !currentTransaction.description || !currentTransaction.accountId}
-          >
-            {isEditing ? 'Update' : 'Add'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+        </div>
+
+        {isLoading ? (
+          <div className="space-y-4">
+            <Skeleton variant="text" count={5} />
+          </div>
+        ) : (
+          <Table
+            headers={tableHeaders}
+            data={tableData}
+            emptyMessage="No transactions found"
+          />
+        )}
+      </Card>
+
+      <Modal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        title="Add New Transaction"
+      >
+        <form className="space-y-4">
+          <Input
+            label="Description"
+            placeholder="Enter transaction description"
+          />
+          <Input
+            label="Amount"
+            type="number"
+            placeholder="0.00"
+          />
+          <Input
+            label="Date"
+            type="date"
+          />
+          <Input
+            label="Category"
+            placeholder="Select category"
+          />
+          <Input
+            label="Account"
+            placeholder="Select account"
+          />
+          <div className="flex justify-end space-x-3 mt-6">
+            <Button
+              variant="secondary"
+              onClick={() => setIsAddModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              type="submit"
+            >
+              Add Transaction
+            </Button>
+          </div>
+        </form>
+      </Modal>
+    </div>
   );
 } 
