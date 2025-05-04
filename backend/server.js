@@ -12,8 +12,7 @@ const app = express();
 
 // Middleware
 const allowedOrigins = [
-  'http://localhost:3000',
-  'https://final-project-1-22hm.onrender.com'
+  'https://final-project-j6z0.onrender.com'
 ];
 
 app.use(cors({
@@ -66,14 +65,7 @@ app.use('/api/scheduled-transactions', require('./routes/scheduledTransactions')
 app.use('/api/preferences', require('./routes/preferences'));
 
 // Serve static assets in production
-if (process.env.NODE_ENV === 'production') {
-  // Set static folder
-  app.use(express.static(path.join(__dirname, '../frontend/dist')));
-
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../frontend/dist', 'index.html'));
-  });
-}
+// (Removed because frontend is deployed separately on Render)
 
 // Error handling middleware
 app.use((err, req, res, next) => {
