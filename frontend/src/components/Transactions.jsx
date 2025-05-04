@@ -34,7 +34,7 @@ import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import { Plus, Search, Filter, Download } from 'lucide-react';
 import Card from './Card';
-import Table from './Table';
+import TableComponent from './Table';
 import Input from './Input';
 import Skeleton from './Skeleton';
 import Modal from './Modal';
@@ -272,7 +272,7 @@ export default function Transactions() {
             <Skeleton variant="text" count={5} />
           </div>
         ) : (
-          <Table
+          <TableComponent
             headers={tableHeaders}
             data={tableData}
             emptyMessage="No transactions found"
