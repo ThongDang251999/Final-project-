@@ -213,8 +213,9 @@ export default function Dashboard() {
     }
   };
 
-  // Restore pieData to use all categories, no aggregation
-  const pieData = Object.keys(CATEGORY_COLORS).map(name => ({
+  // Fill missing categories with 0 for pie chart
+  const allCategories = Object.keys(CATEGORY_COLORS);
+  const pieData = allCategories.map(name => ({
     name,
     value: summary.categoryBreakdown?.[name] || 0
   }));
