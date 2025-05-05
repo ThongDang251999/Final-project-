@@ -205,25 +205,20 @@ const Settings = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Settings</h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="w-full min-h-screen bg-gray-50 py-8 px-4 max-w-6xl mx-auto">
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">Settings</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Profile Settings */}
-        <Card>
-          <div className="flex items-center space-x-3 mb-6">
-            <User className="w-6 h-6 text-primary-600" />
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Profile Settings
-            </h2>
-          </div>
-          <form className="space-y-4" onSubmit={handleSaveProfile}>
+        <div className="bg-white rounded-md shadow-md p-5 flex flex-col space-y-4">
+          <h2 className="text-xl font-bold text-gray-900">Profile Settings</h2>
+          <form className="flex flex-col space-y-4" onSubmit={handleSaveProfile}>
             <Input
               label="Name"
               name="name"
               value={profile.name}
               onChange={handleProfileChange}
               placeholder="Enter your name"
+              className=""
             />
             <Input
               label="Email"
@@ -232,6 +227,7 @@ const Settings = () => {
               onChange={handleProfileChange}
               type="email"
               placeholder="Enter your email"
+              className=""
             />
             <Input
               label="Phone"
@@ -239,6 +235,7 @@ const Settings = () => {
               value={profile.phone}
               onChange={handleProfileChange}
               placeholder="Enter your phone number"
+              className=""
             />
             {profileStatus.success && <div className="text-green-600 text-sm">{profileStatus.success}</div>}
             {profileStatus.error && <div className="text-red-600 text-sm">{profileStatus.error}</div>}
@@ -247,81 +244,48 @@ const Settings = () => {
               icon={Save}
               fullWidth
               type="submit"
+              className="mt-2"
             >
               Save Changes
             </Button>
           </form>
-        </Card>
+        </div>
 
         {/* Notification Settings */}
-        <Card>
-          <div className="flex items-center space-x-3 mb-6">
-            <Bell className="w-6 h-6 text-primary-600" />
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Notification Settings
-            </h2>
-          </div>
-          <div className="space-y-4">
+        <div className="bg-white rounded-md shadow-md p-5 flex flex-col space-y-4">
+          <h2 className="text-xl font-bold text-gray-900">Notification Settings</h2>
+          <div className="flex flex-col space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-gray-700 dark:text-gray-300">Email Notifications</span>
-              <button
-                onClick={() => handleNotificationChange('email')}
-                type="button"
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  notifications.email ? 'bg-primary-600' : 'bg-gray-200 dark:bg-gray-700'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    notifications.email ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
+              <span className="text-gray-700">Email Notifications</span>
+              <label className="inline-flex items-center cursor-pointer">
+                <input type="checkbox" checked={notifications.email} onChange={() => handleNotificationChange('email')} className="sr-only peer" />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-green-400 rounded-full peer peer-checked:bg-green-500 transition"></div>
+                <div className="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5"></div>
+              </label>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-700 dark:text-gray-300">Push Notifications</span>
-              <button
-                onClick={() => handleNotificationChange('push')}
-                type="button"
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  notifications.push ? 'bg-primary-600' : 'bg-gray-200 dark:bg-gray-700'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    notifications.push ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
+              <span className="text-gray-700">Push Notifications</span>
+              <label className="inline-flex items-center cursor-pointer">
+                <input type="checkbox" checked={notifications.push} onChange={() => handleNotificationChange('push')} className="sr-only peer" />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-green-400 rounded-full peer peer-checked:bg-green-500 transition"></div>
+                <div className="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5"></div>
+              </label>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-700 dark:text-gray-300">Weekly Reports</span>
-              <button
-                onClick={() => handleNotificationChange('weeklyReport')}
-                type="button"
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  notifications.weeklyReport ? 'bg-primary-600' : 'bg-gray-200 dark:bg-gray-700'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    notifications.weeklyReport ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
+              <span className="text-gray-700">Weekly Reports</span>
+              <label className="inline-flex items-center cursor-pointer">
+                <input type="checkbox" checked={notifications.weeklyReport} onChange={() => handleNotificationChange('weeklyReport')} className="sr-only peer" />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-green-400 rounded-full peer peer-checked:bg-green-500 transition"></div>
+                <div className="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5"></div>
+              </label>
             </div>
           </div>
-        </Card>
+        </div>
 
         {/* Security Settings */}
-        <Card>
-          <div className="flex items-center space-x-3 mb-6">
-            <Lock className="w-6 h-6 text-primary-600" />
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Security Settings
-            </h2>
-          </div>
-          <form className="space-y-4" onSubmit={handleUpdatePassword}>
+        <div className="bg-white rounded-md shadow-md p-5 flex flex-col space-y-4">
+          <h2 className="text-xl font-bold text-gray-900">Security Settings</h2>
+          <form className="flex flex-col space-y-4" onSubmit={handleUpdatePassword}>
             <Input
               label="Current Password"
               name="current"
@@ -353,40 +317,28 @@ const Settings = () => {
               icon={Save}
               fullWidth
               type="submit"
+              className="mt-2"
             >
               Update Password
             </Button>
           </form>
-        </Card>
+        </div>
 
         {/* Preferences */}
-        <Card>
-          <div className="flex items-center space-x-3 mb-6">
-            <Globe className="w-6 h-6 text-primary-600" />
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Preferences
-            </h2>
-          </div>
-          <div className="space-y-4">
+        <div className="bg-white rounded-md shadow-md p-5 flex flex-col space-y-4">
+          <h2 className="text-xl font-bold text-gray-900">Preferences</h2>
+          <div className="flex flex-col space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-gray-700 dark:text-gray-300">Dark Mode</span>
-              <button
-                onClick={() => setIsDarkMode(!isDarkMode)}
-                type="button"
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  isDarkMode ? 'bg-primary-600' : 'bg-gray-200 dark:bg-gray-700'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    isDarkMode ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
+              <span className="text-gray-700">Dark Mode</span>
+              <label className="inline-flex items-center cursor-pointer">
+                <input type="checkbox" checked={isDarkMode} onChange={() => setIsDarkMode(!isDarkMode)} className="sr-only peer" />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-green-400 rounded-full peer peer-checked:bg-green-500 transition"></div>
+                <div className="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5"></div>
+              </label>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-700 dark:text-gray-300">Currency</span>
-              <select className="input w-32">
+              <span className="text-gray-700">Currency</span>
+              <select className="input w-32 border rounded px-2 py-1">
                 {CURRENCIES.map((currency) => (
                   <option key={currency.value} value={currency.value}>
                     {currency.label}
@@ -395,20 +347,20 @@ const Settings = () => {
               </select>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-700 dark:text-gray-300">Language</span>
-              <select className="input w-32">
+              <span className="text-gray-700">Language</span>
+              <select className="input w-32 border rounded px-2 py-1">
                 <option value="en">English</option>
                 <option value="es">Spanish</option>
                 <option value="fr">French</option>
               </select>
             </div>
           </div>
-        </Card>
+        </div>
 
         {/* Danger Zone: Delete Account */}
         <div className="col-span-1 md:col-span-2">
-          <div className="border border-red-200 rounded-lg p-6 bg-red-50 mt-4 flex flex-col items-center">
-            <h2 className="text-lg font-semibold text-red-700 mb-2">Danger Zone</h2>
+          <div className="border border-red-200 rounded-md p-5 bg-red-50 mt-4 flex flex-col items-center">
+            <h2 className="text-xl font-bold text-red-700 mb-2">Danger Zone</h2>
             <p className="text-red-600 mb-4 text-center">Deleting your account is irreversible. All your data will be permanently removed.</p>
             <button
               onClick={() => setOpenDeleteDialog(true)}
