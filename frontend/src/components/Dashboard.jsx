@@ -214,11 +214,12 @@ export default function Dashboard() {
   };
 
   // Fill missing categories with 0 for pie chart
-  const allCategories = Object.keys(CATEGORY_COLORS);
-  const pieData = allCategories.map(name => ({
-    name,
-    value: summary.categoryBreakdown?.[name] || 0
-  }));
+  const pieData = Object.entries(summary.categoryBreakdown || {})
+    .filter(([name, value]) => value > 0)
+    .map(([name, value]) => ({
+      name,
+      value
+    }));
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
@@ -289,38 +290,44 @@ export default function Dashboard() {
           <Paper sx={{ p: 3, backgroundColor: 'white', borderRadius: 2 }}>
             <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>Spending by Category</Typography>
             <Box sx={{ height: 360, position: 'relative' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                    labelLine={false}
-                  >
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={CATEGORY_COLORS[entry.name] || "#a3a3a3"} />
-                    ))}
-                  </Pie>
-                  <Legend
-                    layout="vertical"
-                    verticalAlign="bottom"
-                    wrapperStyle={{
-                      paddingTop: '20px',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      width: '100%'
-                    }}
-                    payload={pieData.map(entry => ({
-                      value: entry.name,
-                      type: 'square',
-                      color: CATEGORY_COLORS[entry.name] || "#a3a3a3"
-                    }))}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+              {pieData.length === 0 ? (
+                <Typography align="center" sx={{ mt: 8, color: '#aaa' }}>
+                  No spending data yet.
+                </Typography>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={pieData}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                      labelLine={false}
+                    >
+                      {pieData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={CATEGORY_COLORS[entry.name] || "#a3a3a3"} />
+                      ))}
+                    </Pie>
+                    <Legend
+                      layout="vertical"
+                      verticalAlign="bottom"
+                      wrapperStyle={{
+                        paddingTop: '20px',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        width: '100%'
+                      }}
+                      payload={pieData.map(entry => ({
+                        value: entry.name,
+                        type: 'square',
+                        color: CATEGORY_COLORS[entry.name] || "#a3a3a3"
+                      }))}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
             </Box>
           </Paper>
         </Grid>
