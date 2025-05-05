@@ -59,7 +59,8 @@ export default function Accounts() {
     balance: '',
     creditLimit: '',
     paymentDueDate: '',
-    currency: preference.currency || 'USD'
+    currency: preference.currency || 'USD',
+    accountNumber: ''
   });
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState(null);
@@ -107,7 +108,8 @@ export default function Accounts() {
     if (account) {
       const formatted = {
         ...account,
-        paymentDueDate: account.paymentDueDate ? new Date(account.paymentDueDate).toISOString().split('T')[0] : ''
+        paymentDueDate: account.paymentDueDate ? new Date(account.paymentDueDate).toISOString().split('T')[0] : '',
+        accountNumber: account.accountNumber || ''
       };
       setCurrentAccount(formatted);
       setIsEditing(true);
@@ -118,7 +120,8 @@ export default function Accounts() {
         balance: '',
         creditLimit: '',
         paymentDueDate: '',
-        currency: preference.currency || 'USD'
+        currency: preference.currency || 'USD',
+        accountNumber: ''
       });
       setIsEditing(false);
     }
@@ -130,10 +133,20 @@ export default function Accounts() {
   };
 
   const handleInputChange = (e) => {
-    setCurrentAccount({
-      ...currentAccount,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+    if (name === 'accountNumber') {
+      // Only allow numeric input, max 12 digits
+      const numericValue = value.replace(/\D/g, '').slice(0, 12);
+      setCurrentAccount({
+        ...currentAccount,
+        [name]: numericValue
+      });
+    } else {
+      setCurrentAccount({
+        ...currentAccount,
+        [name]: value
+      });
+    }
   };
 
   const handleSubmit = async () => {
@@ -387,6 +400,22 @@ export default function Accounts() {
                 value={currentAccount.name}
                 onChange={handleInputChange}
                 required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Account Number (Optional) or Last 4 Digits (Optional)"
+                name="accountNumber"
+                value={currentAccount.accountNumber}
+                onChange={handleInputChange}
+                placeholder="e.g., 1234"
+                inputProps={{
+                  maxLength: 12,
+                  inputMode: 'numeric',
+                  pattern: '[0-9]*'
+                }}
+                margin="normal"
               />
             </Grid>
             <Grid item xs={12} sm={6}>
