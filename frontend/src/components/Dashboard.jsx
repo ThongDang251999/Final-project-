@@ -220,6 +220,16 @@ export default function Dashboard() {
     value: summary.categoryBreakdown?.[name] || 0
   }));
 
+  // Aggregate small categories into 'Other' for pie chart
+  const total = pieData.reduce((sum, d) => sum + d.value, 0);
+  const threshold = 0.03 * total; // 3%
+  const mainSlices = pieData.filter(d => d.value >= threshold);
+  const otherValue = pieData.filter(d => d.value < threshold).reduce((sum, d) => sum + d.value, 0);
+  const displayData = otherValue > 0
+    ? [...mainSlices, { name: 'Other', value: otherValue }]
+    : mainSlices;
+  const CATEGORY_COLORS_WITH_OTHER = { ...CATEGORY_COLORS, Other: '#a3a3a3' };
+
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Grid container spacing={3}>
@@ -288,39 +298,35 @@ export default function Dashboard() {
         <Grid item xs={12} md={6}>
           <Paper sx={{ p: 3, backgroundColor: 'white', borderRadius: 2 }}>
             <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>Spending by Category</Typography>
-            <Box sx={{ height: 360, position: 'relative' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                    labelLine={false}
-                  >
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={CATEGORY_COLORS[entry.name] || "#a3a3a3"} />
-                    ))}
-                  </Pie>
-                  <Legend
-                    layout="vertical"
-                    verticalAlign="bottom"
-                    wrapperStyle={{
-                      paddingTop: '20px',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      width: '100%'
-                    }}
-                    payload={pieData.map(entry => ({
-                      value: entry.name,
-                      type: 'square',
-                      color: CATEGORY_COLORS[entry.name] || "#a3a3a3"
-                    }))}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+            <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', height: 400 }}>
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={displayData}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={100}
+                      fill="#8884d8"
+                      dataKey="value"
+                      labelLine={false}
+                    >
+                      {displayData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={CATEGORY_COLORS_WITH_OTHER[entry.name] || "#a3a3a3"} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value, name) => [`$${value.toLocaleString()}`, name]} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </Box>
+              <Box sx={{ width: 220, pl: 2, maxHeight: 360, overflowY: 'auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1 }}>
+                {displayData.map(entry => (
+                  <Box key={entry.name} sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                    <Box sx={{ width: 16, height: 16, bgcolor: CATEGORY_COLORS_WITH_OTHER[entry.name] || '#a3a3a3', borderRadius: '4px', mr: 1 }} />
+                    <Typography variant="body2" sx={{ color: CATEGORY_COLORS_WITH_OTHER[entry.name] || '#333' }}>{entry.name}</Typography>
+                  </Box>
+                ))}
+              </Box>
             </Box>
           </Paper>
         </Grid>
