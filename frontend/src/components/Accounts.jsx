@@ -21,22 +21,17 @@ import {
   CardActions,
   Divider,
   Alert,
-  Chip
+  Chip,
+  Tooltip
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import PaymentsIcon from '@mui/icons-material/Payments';
-import CreditCardIcon from '@mui/icons-material/CreditCard';
+import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, AccountBalance as BankIcon, CreditCard as CreditCardIcon, AccountBalanceWallet as WalletIcon } from '@mui/icons-material';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { usePreference } from '../context/PreferenceContext';
 
 const ACCOUNT_TYPES = [
-  { value: 'wallet', label: 'Wallet', icon: <AccountBalanceWalletIcon /> },
-  { value: 'bank', label: 'Bank Account', icon: <AccountBalanceIcon /> },
+  { value: 'wallet', label: 'Wallet', icon: <WalletIcon /> },
+  { value: 'bank', label: 'Bank Account', icon: <BankIcon /> },
   { value: 'credit', label: 'Credit Card', icon: <CreditCardIcon /> }
 ];
 
@@ -46,6 +41,12 @@ const CURRENCIES = [
   { value: 'GBP', label: 'British Pound (£)' },
   { value: 'JPY', label: 'Japanese Yen (¥)' }
 ];
+
+const accountTypeMeta = {
+  bank: { icon: <BankIcon sx={{ color: '#2563eb', bgcolor: '#e0e7ff', borderRadius: '50%', p: 1 }} />, label: 'Bank', color: '#2563eb' },
+  credit: { icon: <CreditCardIcon sx={{ color: '#d32f2f', bgcolor: '#fee2e2', borderRadius: '50%', p: 1 }} />, label: 'Credit', color: '#d32f2f' },
+  wallet: { icon: <WalletIcon sx={{ color: '#059669', bgcolor: '#d1fae5', borderRadius: '50%', p: 1 }} />, label: 'Wallet', color: '#059669' },
+};
 
 export default function Accounts() {
   const { logout } = useAuth();
@@ -179,7 +180,7 @@ export default function Accounts() {
 
   const getAccountTypeIcon = (type) => {
     const accountType = ACCOUNT_TYPES.find(t => t.value === type);
-    return accountType ? accountType.icon : <AccountBalanceIcon />;
+    return accountType ? accountType.icon : <BankIcon />;
   };
 
   const formatCurrency = (amount, currency) => {
@@ -202,119 +203,169 @@ export default function Accounts() {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
-          Accounts
-        </Typography>
-        <Button variant="contained" color="success" startIcon={<AddIcon />} onClick={() => handleOpenDialog()}>
-          Add Account
-        </Button>
-      </Box>
-      
-      {/* Summary Cards */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3, backgroundColor: 'white', borderRadius: 2 }}>
-            <Typography variant="h6" sx={{ mb: 1 }}>Total Balance</Typography>
-            <Typography variant="h3" sx={{ fontWeight: 'bold', color: '#2E7D32' }}>
+      {/* Summary Section */}
+      <Grid container spacing={3} alignItems="stretch">
+        <Grid item xs={12} md={8}>
+          <Paper sx={{ p: 3, borderRadius: 3, boxShadow: 2, height: '100%' }}>
+            <Typography variant="subtitle2" color="text.secondary">Total Balance</Typography>
+            <Typography variant="h3" sx={{ fontWeight: 'bold', color: '#16a34a', mb: 1 }}>
               {formatCurrency(summary.totalBalance, preference.currency)}
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            <Typography variant="body2" color="text.secondary">
               Across all bank accounts and wallet
             </Typography>
           </Paper>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3, backgroundColor: 'white', borderRadius: 2 }}>
-            <Typography variant="h6" sx={{ mb: 1 }}>Credit Usage</Typography>
-            <Typography variant="h3" sx={{ fontWeight: 'bold', color: summary.totalCreditLimit > 0 && (summary.totalCreditUsed / summary.totalCreditLimit) > 0.75 ? '#d32f2f' : '#2E7D32' }}>
-              {summary.totalCreditLimit > 0 
-                ? `${((summary.totalCreditUsed / summary.totalCreditLimit) * 100).toFixed(1)}%`
-                : '0%'
-              }
+        <Grid item xs={12} md={4}>
+          <Paper sx={{ p: 3, borderRadius: 3, boxShadow: 2, height: '100%' }}>
+            <Typography variant="subtitle2" color="text.secondary">Credit Usage</Typography>
+            <Typography variant="h3" sx={{ fontWeight: 'bold', color: '#15803d', mb: 1 }}>
+              {summary.totalCreditLimit > 0 ? `${((summary.totalCreditUsed / summary.totalCreditLimit) * 100).toFixed(1)}%` : '0%'}
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            <Box sx={{ width: '100%', mb: 1 }}>
+              <Box sx={{ height: 8, bgcolor: '#e5e7eb', borderRadius: 4 }}>
+                <Box sx={{
+                  width: summary.totalCreditLimit > 0 ? `${(summary.totalCreditUsed / summary.totalCreditLimit) * 100}%` : '0%',
+                  height: 8,
+                  bgcolor: '#16a34a',
+                  borderRadius: 4,
+                  transition: 'width 0.3s',
+                }} />
+              </Box>
+            </Box>
+            <Typography variant="body2" color="text.secondary">
               {formatCurrency(summary.totalCreditUsed, preference.currency)} of {formatCurrency(summary.totalCreditLimit, preference.currency)} used
             </Typography>
           </Paper>
         </Grid>
+        <Grid item xs={12}>
+          <Box display="flex" justifyContent="flex-end" mb={2}>
+            <Button
+              variant="contained"
+              color="success"
+              startIcon={<AddIcon />}
+              sx={{ borderRadius: 2, fontWeight: 600, boxShadow: 1, textTransform: 'none', ':hover': { bgcolor: '#22c55e' } }}
+              onClick={() => handleOpenDialog()}
+            >
+              Add Account
+            </Button>
+          </Box>
+        </Grid>
       </Grid>
-      
-      {/* Account Cards */}
+
+      {/* Accounts Grid */}
       <Grid container spacing={3}>
         {accounts.length > 0 ? (
-          accounts.map((account) => (
-            <Grid item xs={12} sm={6} md={4} key={account._id}>
-              <Card sx={{ 
-                borderRadius: 2,
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              }}>
-                <CardContent>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                    <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center' }}>
-                      {React.cloneElement(getAccountTypeIcon(account.type), { sx: { mr: 1 } })}
-                      {account.name}
-                    </Typography>
-                    <Chip 
-                      label={account.type.charAt(0).toUpperCase() + account.type.slice(1)}
-                      size="small"
-                      color={account.type === 'credit' ? 'error' : account.type === 'bank' ? 'primary' : 'default'}
-                    />
+          accounts.map((account) => {
+            const meta = accountTypeMeta[account.type] || accountTypeMeta.bank;
+            return (
+              <Grid item xs={12} sm={6} md={4} key={account._id}>
+                <Paper
+                  sx={{
+                    borderRadius: 3,
+                    boxShadow: 2,
+                    p: 3,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1.5,
+                    transition: 'box-shadow 0.2s, transform 0.2s',
+                    ':hover': { boxShadow: 6, transform: 'translateY(-2px) scale(1.01)' },
+                    minHeight: 220,
+                  }}
+                >
+                  <Box display="flex" alignItems="center" gap={1} mb={1}>
+                    {meta.icon}
+                    <Typography variant="h6" sx={{ fontWeight: 600 }}>{account.name}</Typography>
+                    <Box ml="auto">
+                      <span style={{ fontSize: 13, color: '#64748b' }}>{meta.label}</span>
+                    </Box>
                   </Box>
-                  
-                  <Typography variant="h5" sx={{ fontWeight: 'bold', color: account.type === 'credit' ? '#d32f2f' : '#2E7D32' }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: 13, mb: 0.5 }}>
+                    {account._id}
+                  </Typography>
+                  <Typography
+                    variant="h4"
+                    sx={{
+                      fontWeight: 'bold',
+                      color: account.type === 'credit' ? '#d32f2f' : '#16a34a',
+                      textAlign: 'right',
+                    }}
+                  >
                     {formatCurrency(account.balance, account.currency)}
                   </Typography>
-                  
                   {account.type === 'credit' && (
                     <>
-                      <Divider sx={{ my: 2 }} />
-                      <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span>Credit Limit:</span> 
-                        <span>{formatCurrency(account.creditLimit, account.currency)}</span>
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span>Available Credit:</span>
-                        <span>{formatCurrency(account.creditLimit - account.balance, account.currency)}</span>
-                      </Typography>
-                      <Typography variant="body2" sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span>Payment Due:</span>
-                        <span>{new Date(account.paymentDueDate).toLocaleDateString()}</span>
-                      </Typography>
-                      <Typography variant="body2" sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
-                        <span>Usage:</span>
-                        <span 
-                          style={{ 
-                            color: getCreditUsageColor(getCreditUsagePercentage(account.balance, account.creditLimit)) === 'error' 
-                              ? '#d32f2f' 
-                              : getCreditUsageColor(getCreditUsagePercentage(account.balance, account.creditLimit)) === 'warning'
-                                ? '#ff9800'
-                                : '#2E7D32'
-                          }}
-                        >
-                          {getCreditUsagePercentage(account.balance, account.creditLimit).toFixed(1)}%
-                        </span>
-                      </Typography>
+                      <Box display="flex" justifyContent="space-between" alignItems="center" mt={1} mb={0.5}>
+                        <Typography variant="caption" color="text.secondary">Credit Limit:</Typography>
+                        <Typography variant="caption" sx={{ fontWeight: 500 }}>{formatCurrency(account.creditLimit, account.currency)}</Typography>
+                      </Box>
+                      <Box display="flex" justifyContent="space-between" alignItems="center" mb={0.5}>
+                        <Typography variant="caption" color="text.secondary">Available Credit:</Typography>
+                        <Typography variant="caption" sx={{ fontWeight: 500 }}>{formatCurrency(account.creditLimit - account.balance, account.currency)}</Typography>
+                      </Box>
+                      <Box display="flex" justifyContent="space-between" alignItems="center" mb={0.5}>
+                        <Typography variant="caption" color="text.secondary">Payment Due:</Typography>
+                        <Typography variant="caption" sx={{ fontWeight: 500 }}>{new Date(account.paymentDueDate).toLocaleDateString()}</Typography>
+                      </Box>
+                      <Box sx={{ width: '100%', mb: 1 }}>
+                        <Box sx={{ height: 6, bgcolor: '#e5e7eb', borderRadius: 4 }}>
+                          <Box sx={{
+                            width: account.creditLimit > 0 ? `${(account.balance / account.creditLimit) * 100}%` : '0%',
+                            height: 6,
+                            bgcolor: '#16a34a',
+                            borderRadius: 4,
+                            transition: 'width 0.3s',
+                          }} />
+                        </Box>
+                      </Box>
                     </>
                   )}
-                </CardContent>
-                <CardActions>
-                  <Button size="small" startIcon={<EditIcon />} onClick={() => handleOpenDialog(account)}>
-                    Edit
-                  </Button>
-                  <Button size="small" startIcon={<DeleteIcon />} onClick={() => handleDelete(account._id)}>
-                    Delete
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))
+                  <Box display="flex" justifyContent="flex-end" gap={1} mt="auto">
+                    <Tooltip title="Edit" arrow>
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        color="primary"
+                        sx={{ minWidth: 36, borderRadius: 2, p: 0.5 }}
+                        onClick={() => handleOpenDialog(account)}
+                      >
+                        <EditIcon fontSize="small" />
+                      </Button>
+                    </Tooltip>
+                    <Tooltip title="Delete" arrow>
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        color="error"
+                        sx={{ minWidth: 36, borderRadius: 2, p: 0.5 }}
+                        onClick={() => handleDelete(account._id)}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </Button>
+                    </Tooltip>
+                  </Box>
+                </Paper>
+              </Grid>
+            );
+          })
         ) : (
           <Grid item xs={12}>
-            <Paper sx={{ p: 3, textAlign: 'center' }}>
-              <Typography variant="body1">
-                No accounts set up yet. Add your first account to get started!
+            <Paper sx={{ p: 6, textAlign: 'center', borderRadius: 3, boxShadow: 1 }}>
+              <Typography variant="h5" color="text.secondary" sx={{ mb: 2 }}>
+                No accounts yet
               </Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+                Add your first account to start tracking your finances!
+              </Typography>
+              <Button
+                variant="contained"
+                color="success"
+                startIcon={<AddIcon />}
+                sx={{ borderRadius: 2, fontWeight: 600, boxShadow: 1, textTransform: 'none', ':hover': { bgcolor: '#22c55e' } }}
+                onClick={() => handleOpenDialog()}
+              >
+                Add Account
+              </Button>
             </Paper>
           </Grid>
         )}
