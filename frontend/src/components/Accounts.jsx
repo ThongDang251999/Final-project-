@@ -280,9 +280,6 @@ export default function Accounts() {
                       <span style={{ fontSize: 13, color: '#64748b' }}>{meta.label}</span>
                     </Box>
                   </Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: 13, mb: 0.5 }}>
-                    {account._id}
-                  </Typography>
                   <Typography
                     variant="h4"
                     sx={{

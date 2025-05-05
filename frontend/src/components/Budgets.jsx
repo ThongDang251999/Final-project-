@@ -254,24 +254,40 @@ export default function Budgets() {
         onClose={() => setIsAddModalOpen(false)}
         title="Add New Budget"
       >
-        <form className="space-y-4">
+        <form
+          className="space-y-4"
+          onSubmit={e => {
+            e.preventDefault();
+            handleSubmit();
+          }}
+        >
           <Input
             label="Category"
+            name="category"
             placeholder="Select category"
+            value={currentBudget.category}
+            onChange={handleInputChange}
           />
           <Input
             label="Amount"
+            name="amount"
             type="number"
             placeholder="0.00"
+            value={currentBudget.amount}
+            onChange={handleInputChange}
           />
           <Input
             label="Period"
+            name="period"
             type="month"
+            value={currentBudget.period}
+            onChange={handleInputChange}
           />
           <div className="flex justify-end space-x-3 mt-6">
             <Button
               variant="secondary"
               onClick={() => setIsAddModalOpen(false)}
+              type="button"
             >
               Cancel
             </Button>
