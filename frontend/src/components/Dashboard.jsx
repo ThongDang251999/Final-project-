@@ -213,9 +213,11 @@ export default function Dashboard() {
     }
   };
 
-  const pieData = Object.entries(summary.categoryBreakdown || {}).map(([name, value]) => ({
+  // Fill missing categories with 0 for pie chart
+  const allCategories = Object.keys(CATEGORY_COLORS);
+  const pieData = allCategories.map(name => ({
     name,
-    value
+    value: summary.categoryBreakdown?.[name] || 0
   }));
 
   return (
@@ -330,7 +332,7 @@ export default function Dashboard() {
             <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>Recent Daily Spending (Last 7 Days)</Typography>
             <Box sx={{ height: 320, position: 'relative' }}>
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={recentSpending}>
+                <BarChart data={recentSpending} margin={{ left: 48, right: 20, top: 20, bottom: 20 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                   <YAxis tickFormatter={(value) => `$${value}`} />
