@@ -261,7 +261,18 @@ export default function Transactions() {
           <Button
             variant="primary"
             icon={Plus}
-            onClick={() => setIsAddModalOpen(true)}
+            onClick={() => {
+              setCurrentTransaction({
+                amount: '',
+                type: 'expense',
+                category: 'Food & Drinks',
+                description: '',
+                date: new Date().toISOString().split('T')[0],
+                accountId: accounts.length > 0 ? accounts[0]._id : ''
+              });
+              setIsEditing(false);
+              setIsAddModalOpen(true);
+            }}
           >
             Add Transaction
           </Button>
