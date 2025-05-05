@@ -404,12 +404,10 @@ const Settings = () => {
             </div>
           </div>
         </Card>
-      </div>
 
-      {/* Danger Zone: Delete Account */}
-      <div className="mt-8 flex justify-end">
-        <div className="w-full md:w-1/2">
-          <div className="border border-red-200 rounded-lg p-6 bg-red-50">
+        {/* Danger Zone: Delete Account */}
+        <div className="col-span-1 md:col-span-2">
+          <div className="border border-red-200 rounded-lg p-6 bg-red-50 mt-2">
             <h2 className="text-lg font-semibold text-red-700 mb-2">Danger Zone</h2>
             <p className="text-red-600 mb-4">Deleting your account is irreversible. All your data will be permanently removed.</p>
             <Button

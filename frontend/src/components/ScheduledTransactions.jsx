@@ -408,6 +408,16 @@ export default function ScheduledTransactions() {
                 onChange={handleInputChange}
                 InputLabelProps={{ shrink: true }}
                 required
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#16a34a',
+                    },
+                  },
+                  '& label.Mui-focused': {
+                    color: '#16a34a',
+                  },
+                }}
               />
             </Grid>
             <Grid item xs={12}>
