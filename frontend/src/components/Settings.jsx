@@ -405,6 +405,54 @@ const Settings = () => {
           </div>
         </Card>
       </div>
+
+      {/* Danger Zone: Delete Account */}
+      <div className="mt-8 flex justify-end">
+        <div className="w-full md:w-1/2">
+          <div className="border border-red-200 rounded-lg p-6 bg-red-50">
+            <h2 className="text-lg font-semibold text-red-700 mb-2">Danger Zone</h2>
+            <p className="text-red-600 mb-4">Deleting your account is irreversible. All your data will be permanently removed.</p>
+            <Button
+              variant="outlined"
+              color="error"
+              fullWidth
+              onClick={() => setOpenDeleteDialog(true)}
+            >
+              Delete Account
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Delete Account Confirmation Dialog */}
+      {openDeleteDialog && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-30">
+          <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
+            <h3 className="text-xl font-bold mb-4 text-red-700">Delete Account?</h3>
+            <p className="mb-6">Are you sure you want to delete your account? This action cannot be undone.</p>
+            <div className="flex justify-end space-x-3">
+              <Button variant="secondary" onClick={() => setOpenDeleteDialog(false)}>
+                Cancel
+              </Button>
+              <Button variant="primary" color="error" onClick={async () => {
+                try {
+                  await axios.delete('/api/user');
+                  logout();
+                } catch (error) {
+                  setSnackbar({
+                    open: true,
+                    message: error.response?.data?.message || 'Failed to delete account.',
+                    severity: 'error'
+                  });
+                  setOpenDeleteDialog(false);
+                }
+              }}>
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
