@@ -187,13 +187,15 @@ export default function CreditCards() {
         creditLimit: Number(newCard.creditLimit),
         currency: newCard.currency,
         paymentDueDate: newCard.paymentDueDate,
-        // Optionally add number, expiry, cvv if your backend supports it
+        number: newCard.number,
+        expiry: newCard.expiry,
+        cvv: newCard.cvv,
       });
       setIsAddModalOpen(false);
       setNewCard({ name: '', number: '', expiry: '', cvv: '', creditLimit: '', currency: preference.currency || 'USD', paymentDueDate: '' });
       fetchCreditCards();
     } catch (error) {
-      console.error('Error adding credit card:', error);
+      alert(error.response?.data?.message || 'Error adding credit card');
     }
   };
 

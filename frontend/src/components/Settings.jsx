@@ -317,11 +317,11 @@ const Settings = () => {
           <div className="flex flex-col space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-gray-700">Dark Mode</span>
-              <label className="inline-flex items-center cursor-pointer">
-                <input type="checkbox" checked={isDarkMode} onChange={() => setIsDarkMode(!isDarkMode)} className="sr-only peer" />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-green-400 rounded-full peer peer-checked:bg-green-500 transition"></div>
-                <div className="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5"></div>
-              </label>
+              <Switch
+                checked={preference.theme === 'dark'}
+                onChange={handleThemeChange}
+                color="success"
+              />
             </div>
             <div className="flex items-center justify-between">
               <span className="text-gray-700">Currency</span>
