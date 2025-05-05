@@ -39,7 +39,26 @@ import Input from './Input';
 import Skeleton from './Skeleton';
 import Modal from './Modal';
 
-const CATEGORIES = ['Food & Drinks', 'Transportation', 'Shopping', 'Entertainment'];
+const CATEGORIES = [
+  "Food & Drinks",
+  "Groceries",
+  "Rent / Mortgage",
+  "Utilities",
+  "Internet / Phone",
+  "Transportation",
+  "Shopping",
+  "Entertainment",
+  "Insurance",
+  "Medical / Healthcare",
+  "Income / Salary",
+  "Credit Card Payment",
+  "Subscriptions",
+  "Travel",
+  "Fitness",
+  "Childcare",
+  "Pets",
+  "Donations / Gifts"
+];
 
 export default function Transactions() {
   const { logout } = useAuth();
@@ -219,10 +238,16 @@ export default function Transactions() {
     </span>,
     transaction.accountId?.name || getAccountName(transaction.accountId),
     <div className="flex space-x-2">
-      <button className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+      <button
+        className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+        onClick={() => handleOpenDialog(transaction)}
+      >
         Edit
       </button>
-      <button className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
+      <button
+        className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+        onClick={() => handleDelete(transaction._id)}
+      >
         Delete
       </button>
     </div>
@@ -303,12 +328,23 @@ export default function Transactions() {
             onChange={handleInputChange}
           />
           <FormControl fullWidth>
-            <InputLabel>Category</InputLabel>
+            <InputLabel sx={{
+              '&.Mui-focused': {
+                color: '#16a34a',
+              },
+            }}>Category</InputLabel>
             <Select
               name="category"
               value={currentTransaction.category}
               onChange={handleInputChange}
               label="Category"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#16a34a',
+                  },
+                },
+              }}
             >
               {CATEGORIES.map((category) => (
                 <MenuItem key={category} value={category}>{category}</MenuItem>
@@ -316,12 +352,23 @@ export default function Transactions() {
             </Select>
           </FormControl>
           <FormControl fullWidth>
-            <InputLabel>Account</InputLabel>
+            <InputLabel sx={{
+              '&.Mui-focused': {
+                color: '#16a34a',
+              },
+            }}>Account</InputLabel>
             <Select
               name="accountId"
               value={currentTransaction.accountId}
               onChange={handleInputChange}
               label="Account"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#16a34a',
+                  },
+                },
+              }}
             >
               {accounts.map((account) => (
                 <MenuItem key={account._id} value={account._id}>{account.name}</MenuItem>
