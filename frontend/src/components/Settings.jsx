@@ -407,17 +407,16 @@ const Settings = () => {
 
         {/* Danger Zone: Delete Account */}
         <div className="col-span-1 md:col-span-2">
-          <div className="border border-red-200 rounded-lg p-6 bg-red-50 mt-2">
+          <div className="border border-red-200 rounded-lg p-6 bg-red-50 mt-4 flex flex-col items-center">
             <h2 className="text-lg font-semibold text-red-700 mb-2">Danger Zone</h2>
-            <p className="text-red-600 mb-4">Deleting your account is irreversible. All your data will be permanently removed.</p>
-            <Button
-              variant="outlined"
-              color="error"
-              fullWidth
+            <p className="text-red-600 mb-4 text-center">Deleting your account is irreversible. All your data will be permanently removed.</p>
+            <button
               onClick={() => setOpenDeleteDialog(true)}
+              className="w-full max-w-xs py-3 px-6 rounded-md bg-red-600 text-white font-semibold text-base shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 transition"
+              type="button"
             >
               Delete Account
-            </Button>
+            </button>
           </div>
         </div>
       </div>
