@@ -288,14 +288,14 @@ export default function Dashboard() {
         <Grid item xs={12} md={6}>
           <Paper sx={{ p: 3, backgroundColor: 'white', borderRadius: 2 }}>
             <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>Spending by Category</Typography>
-            <Box sx={{ height: 320, position: 'relative' }}>
+            <Box sx={{ height: 360, position: 'relative' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={pieData}
                     cx="50%"
                     cy="50%"
-                    outerRadius={100}
+                    outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
                     labelLine={false}
