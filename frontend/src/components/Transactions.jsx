@@ -279,32 +279,60 @@ export default function Transactions() {
         onClose={() => setIsAddModalOpen(false)}
         title="Add New Transaction"
       >
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={e => { e.preventDefault(); handleSubmit(); }}>
           <Input
             label="Description"
+            name="description"
             placeholder="Enter transaction description"
+            value={currentTransaction.description}
+            onChange={handleInputChange}
           />
           <Input
             label="Amount"
+            name="amount"
             type="number"
             placeholder="0.00"
+            value={currentTransaction.amount}
+            onChange={handleInputChange}
           />
           <Input
             label="Date"
+            name="date"
             type="date"
+            value={currentTransaction.date}
+            onChange={handleInputChange}
           />
-          <Input
-            label="Category"
-            placeholder="Select category"
-          />
-          <Input
-            label="Account"
-            placeholder="Select account"
-          />
+          <FormControl fullWidth>
+            <InputLabel>Category</InputLabel>
+            <Select
+              name="category"
+              value={currentTransaction.category}
+              onChange={handleInputChange}
+              label="Category"
+            >
+              {CATEGORIES.map((category) => (
+                <MenuItem key={category} value={category}>{category}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl fullWidth>
+            <InputLabel>Account</InputLabel>
+            <Select
+              name="accountId"
+              value={currentTransaction.accountId}
+              onChange={handleInputChange}
+              label="Account"
+            >
+              {accounts.map((account) => (
+                <MenuItem key={account._id} value={account._id}>{account.name}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <div className="flex justify-end space-x-3 mt-6">
             <Button
               variant="secondary"
               onClick={() => setIsAddModalOpen(false)}
+              type="button"
             >
               Cancel
             </Button>
