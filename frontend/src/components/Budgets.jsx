@@ -199,34 +199,49 @@ export default function Budgets() {
             </Card>
           ))
         ) : (
-          budgets.map((budget) => (
-            <Card key={budget._id}>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    {budget.category}
-                  </h3>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {budget.period}
-                  </span>
+          budgets.map((budget) => {
+            // Defensive: handle missing/undefined/null values
+            const spent = typeof budget.spent === 'number' && !isNaN(budget.spent) ? budget.spent : 0;
+            const amount = typeof budget.amount === 'number' && !isNaN(budget.amount) ? budget.amount : Number(budget.amount) || 0;
+            const percent = amount > 0 ? Math.min((spent / amount) * 100, 100) : 0;
+            const remaining = amount - spent;
+            let barColor = 'bg-green-500';
+            if (percent >= 90) barColor = 'bg-red-500';
+            else if (percent >= 70) barColor = 'bg-yellow-400';
+            return (
+              <Card key={budget._id}>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      {budget.category || 'No data'}
+                    </h3>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      {budget.period || 'No data'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm mb-1">
+                    <span className="text-gray-600 dark:text-gray-400">
+                      ${!isNaN(spent) ? spent : 0} of ${!isNaN(amount) ? amount : 0} spent
+                    </span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      {amount > 0 ? percent.toFixed(1) : 0}%
+                    </span>
+                  </div>
+                  <div className="w-full h-2 rounded bg-gray-200 overflow-hidden mb-1">
+                    <div className={`h-2 rounded transition-all duration-300 ${barColor}`} style={{ width: `${percent}%` }} />
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600 dark:text-gray-400">
+                      {amount > 0 ? percent.toFixed(1) : 0}% spent
+                    </span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      ${!isNaN(remaining) && remaining >= 0 ? remaining : 0} remaining
+                    </span>
+                  </div>
                 </div>
-                <ProgressBar
-                  value={budget.spent}
-                  max={budget.amount}
-                  label={`$${budget.spent} of $${budget.amount}`}
-                  color={budget.spent > budget.amount ? 'red' : 'primary'}
-                />
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600 dark:text-gray-400">
-                    {((budget.spent / budget.amount) * 100).toFixed(1)}% spent
-                  </span>
-                  <span className="text-gray-600 dark:text-gray-400">
-                    ${budget.amount - budget.spent} remaining
-                  </span>
-                </div>
-              </div>
-            </Card>
-          ))
+              </Card>
+            );
+          })
         )}
       </div>
 
@@ -274,13 +289,6 @@ export default function Budgets() {
             type="number"
             placeholder="0.00"
             value={currentBudget.amount}
-            onChange={handleInputChange}
-          />
-          <Input
-            label="Period"
-            name="period"
-            type="month"
-            value={currentBudget.period}
             onChange={handleInputChange}
           />
           <div className="flex justify-end space-x-3 mt-6">
