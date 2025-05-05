@@ -139,7 +139,7 @@ export default function Transactions() {
       });
       setIsEditing(false);
     }
-    setOpenDialog(true);
+    setIsAddModalOpen(true);
   };
 
   const handleCloseDialog = () => {
