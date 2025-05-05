@@ -210,15 +210,14 @@ export default function Budgets() {
             else if (percent >= 70) barColor = 'bg-yellow-400';
             return (
               <Card key={budget._id}>
-                <div className="space-y-4 relative">
-                  {/* Delete button top-right */}
+                <div className="relative bg-white rounded-xl shadow p-5 flex flex-col gap-2">
                   <button
-                    className="absolute top-2 right-2 p-2 rounded-full bg-red-100 hover:bg-red-200 text-red-600 transition"
-                    title="Delete Budget"
+                    className="absolute top-3 right-3 text-red-400 hover:text-red-600 transition"
                     onClick={() => handleDelete(budget._id)}
+                    title="Delete budget"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                   <div className="flex items-center justify-between">

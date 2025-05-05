@@ -17,6 +17,7 @@ import ProgressBar from './ProgressBar';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { usePreference } from '../context/PreferenceContext';
+import Switch from './Switch';
 
 const CURRENCIES = [
   { value: 'USD', label: 'US Dollar ($)' },
@@ -254,31 +255,17 @@ const Settings = () => {
         {/* Notification Settings */}
         <div className="bg-white rounded-md shadow-md p-5 flex flex-col space-y-4">
           <h2 className="text-xl font-bold text-gray-900">Notification Settings</h2>
-          <div className="flex flex-col space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-gray-700">Email Notifications</span>
-              <label className="inline-flex items-center cursor-pointer">
-                <input type="checkbox" checked={notifications.email} onChange={() => handleNotificationChange('email')} className="sr-only peer" />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-green-400 rounded-full peer peer-checked:bg-green-500 transition"></div>
-                <div className="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5"></div>
-              </label>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-gray-700">Push Notifications</span>
-              <label className="inline-flex items-center cursor-pointer">
-                <input type="checkbox" checked={notifications.push} onChange={() => handleNotificationChange('push')} className="sr-only peer" />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-green-400 rounded-full peer peer-checked:bg-green-500 transition"></div>
-                <div className="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5"></div>
-              </label>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-gray-700">Weekly Reports</span>
-              <label className="inline-flex items-center cursor-pointer">
-                <input type="checkbox" checked={notifications.weeklyReport} onChange={() => handleNotificationChange('weeklyReport')} className="sr-only peer" />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-green-400 rounded-full peer peer-checked:bg-green-500 transition"></div>
-                <div className="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition peer-checked:translate-x-5"></div>
-              </label>
-            </div>
+          <div className="flex items-center justify-between">
+            <span>Email Notifications</span>
+            <Switch checked={notifications.email} onChange={() => handleNotificationChange('email')} color="success" />
+          </div>
+          <div className="flex items-center justify-between">
+            <span>Push Notifications</span>
+            <Switch checked={notifications.push} onChange={() => handleNotificationChange('push')} color="success" />
+          </div>
+          <div className="flex items-center justify-between">
+            <span>Weekly Reports</span>
+            <Switch checked={notifications.weeklyReport} onChange={() => handleNotificationChange('weeklyReport')} color="success" />
           </div>
         </div>
 

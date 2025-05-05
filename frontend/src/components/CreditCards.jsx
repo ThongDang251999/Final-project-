@@ -44,6 +44,15 @@ export default function CreditCards() {
   const [totalCreditLimit, setTotalCreditLimit] = useState(0);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [newCard, setNewCard] = useState({
+    name: '',
+    number: '',
+    expiry: '',
+    cvv: '',
+    creditLimit: '',
+    currency: preference.currency || 'USD',
+    paymentDueDate: '',
+  });
 
   const fetchCreditCards = async () => {
     try {
@@ -162,6 +171,32 @@ export default function CreditCards() {
     return 'error';
   };
 
+  const handleNewCardInputChange = (e) => {
+    setNewCard({
+      ...newCard,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleAddCard = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('/api/accounts', {
+        name: newCard.name,
+        type: 'credit',
+        creditLimit: Number(newCard.creditLimit),
+        currency: newCard.currency,
+        paymentDueDate: newCard.paymentDueDate,
+        // Optionally add number, expiry, cvv if your backend supports it
+      });
+      setIsAddModalOpen(false);
+      setNewCard({ name: '', number: '', expiry: '', cvv: '', creditLimit: '', currency: preference.currency || 'USD', paymentDueDate: '' });
+      fetchCreditCards();
+    } catch (error) {
+      console.error('Error adding credit card:', error);
+    }
+  };
+
   // Simulate loading
   setTimeout(() => {
     setIsLoading(false);
@@ -268,34 +303,63 @@ export default function CreditCards() {
         onClose={() => setIsAddModalOpen(false)}
         title="Add New Credit Card"
       >
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleAddCard}>
           <Input
             label="Card Name"
+            name="name"
             placeholder="Enter card name"
+            value={newCard.name}
+            onChange={handleNewCardInputChange}
+            required
           />
           <Input
             label="Card Number"
+            name="number"
             placeholder="Enter card number"
+            value={newCard.number}
+            onChange={handleNewCardInputChange}
+            required
           />
           <div className="grid grid-cols-2 gap-4">
             <Input
               label="Expiry Date"
+              name="expiry"
               type="month"
+              value={newCard.expiry}
+              onChange={handleNewCardInputChange}
+              required
             />
             <Input
               label="CVV"
+              name="cvv"
               placeholder="123"
+              value={newCard.cvv}
+              onChange={handleNewCardInputChange}
+              required
             />
           </div>
           <Input
             label="Credit Limit"
+            name="creditLimit"
             type="number"
             placeholder="0.00"
+            value={newCard.creditLimit}
+            onChange={handleNewCardInputChange}
+            required
+          />
+          <Input
+            label="Payment Due Date"
+            name="paymentDueDate"
+            type="date"
+            value={newCard.paymentDueDate}
+            onChange={handleNewCardInputChange}
+            required
           />
           <div className="flex justify-end space-x-3 mt-6">
             <ButtonComponent
               variant="secondary"
               onClick={() => setIsAddModalOpen(false)}
+              type="button"
             >
               Cancel
             </ButtonComponent>

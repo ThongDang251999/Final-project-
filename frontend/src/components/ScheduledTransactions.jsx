@@ -38,7 +38,26 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { usePreference } from '../context/PreferenceContext';
 
-const CATEGORIES = ['Food & Drinks', 'Transportation', 'Shopping', 'Entertainment'];
+const CATEGORIES = [
+  "Food & Drinks",
+  "Groceries",
+  "Rent / Mortgage",
+  "Utilities",
+  "Internet / Phone",
+  "Transportation",
+  "Shopping",
+  "Entertainment",
+  "Insurance",
+  "Medical / Healthcare",
+  "Income / Salary",
+  "Credit Card Payment",
+  "Subscriptions",
+  "Travel",
+  "Fitness",
+  "Childcare",
+  "Pets",
+  "Donations / Gifts"
+];
 const RECURRENCE_TYPES = [
   { value: 'daily', label: 'Daily' },
   { value: 'weekly', label: 'Weekly' },
@@ -336,11 +355,21 @@ export default function ScheduledTransactions() {
               <TextField
                 fullWidth
                 label="Amount"
-                type="number"
                 name="amount"
+                type="number"
                 value={currentTransaction.amount}
                 onChange={handleInputChange}
                 required
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#16a34a',
+                    },
+                  },
+                  '& label.Mui-focused': {
+                    color: '#16a34a',
+                  },
+                }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -375,12 +404,19 @@ export default function ScheduledTransactions() {
             </Grid>
             <Grid item xs={12}>
               <FormControl fullWidth>
-                <InputLabel>Category</InputLabel>
+                <InputLabel sx={{ '&.Mui-focused': { color: '#16a34a' } }}>Category</InputLabel>
                 <Select
                   name="category"
                   value={currentTransaction.category}
                   onChange={handleInputChange}
                   label="Category"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#16a34a',
+                      },
+                    },
+                  }}
                 >
                   {CATEGORIES.map((category) => (
                     <MenuItem key={category} value={category}>{category}</MenuItem>
