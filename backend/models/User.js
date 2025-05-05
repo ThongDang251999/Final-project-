@@ -18,6 +18,10 @@ const userSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  phone: {
+    type: String,
+    trim: true
+  },
   createdAt: {
     type: Date,
     default: Date.now

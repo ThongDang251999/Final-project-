@@ -20,7 +20,7 @@ const auth = async (req, res, next) => {
 // Register
 router.post('/register', async (req, res) => {
   try {
-    const { email, password, name } = req.body;
+    const { email, password, name, phone } = req.body;
     
     // Normalize email
     const normalizedEmail = email.toLowerCase().trim();
@@ -33,7 +33,8 @@ router.post('/register', async (req, res) => {
     const user = new User({
       email: normalizedEmail,
       password,
-      name: name.trim()
+      name: name.trim(),
+      phone: phone ? phone.trim() : undefined
     });
 
     await user.save();

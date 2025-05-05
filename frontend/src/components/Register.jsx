@@ -18,6 +18,7 @@ export default function Register() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: ''
   });
@@ -37,6 +38,12 @@ export default function Register() {
       errors.email = 'Email must end with @gmail.com';
     }
 
+    if (!formData.phone.trim()) {
+      errors.phone = 'Phone is required';
+    } else if (!/^\d{10,15}$/.test(formData.phone.trim())) {
+      errors.phone = 'Phone must be 10-15 digits';
+    }
+
     if (!formData.password) {
       errors.password = 'Password is required';
     } else if (formData.password.length < 6) {
@@ -53,7 +60,7 @@ export default function Register() {
     const errors = validateForm();
     if (Object.keys(errors).length === 0) {
       try {
-        await register(formData.name, formData.email, formData.password);
+        await register(formData.name, formData.email, formData.password, formData.phone);
         navigate('/');
       } catch (err) {
         // Error is handled by AuthContext
@@ -112,6 +119,20 @@ export default function Register() {
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               error={!!formErrors.email}
               helperText={formErrors.email}
+              color="success"
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="phone"
+              label="Phone Number"
+              name="phone"
+              autoComplete="tel"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              error={!!formErrors.phone}
+              helperText={formErrors.phone}
               color="success"
             />
             <TextField
