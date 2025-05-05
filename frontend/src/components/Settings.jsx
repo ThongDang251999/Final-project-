@@ -17,7 +17,7 @@ import ProgressBar from './ProgressBar';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { usePreference } from '../context/PreferenceContext';
-import Switch from './Switch';
+import Switch from '@mui/material/Switch';
 
 const CURRENCIES = [
   { value: 'USD', label: 'US Dollar ($)' },

@@ -2,6 +2,7 @@ import { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
+import CreditCardDetailsModal from './CreditCardDetailsModal';
 
 const Modal = ({
   isOpen,
