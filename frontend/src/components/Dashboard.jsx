@@ -25,9 +25,27 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 
-// Enhanced colors to match screenshot
-const COLORS = ['#20B2AA', '#4682B4', '#FFD700', '#77DD77'];
-const CATEGORIES = ['Food & Drinks', 'Transportation', 'Shopping', 'Entertainment'];
+// Category color map for all categories
+const CATEGORY_COLORS = {
+  "Food & Drinks": "#14b8a6",
+  "Groceries": "#22c55e",
+  "Rent / Mortgage": "#6366f1",
+  "Utilities": "#a21caf",
+  "Internet / Phone": "#0ea5e9",
+  "Transportation": "#f59e42",
+  "Shopping": "#f43f5e",
+  "Entertainment": "#fbbf24",
+  "Insurance": "#64748b",
+  "Medical / Healthcare": "#e11d48",
+  "Income / Salary": "#2563eb",
+  "Credit Card Payment": "#7c3aed",
+  "Subscriptions": "#facc15",
+  "Travel": "#06b6d4",
+  "Fitness": "#22d3ee",
+  "Childcare": "#f472b6",
+  "Pets": "#a3e635",
+  "Donations / Gifts": "#f87171"
+};
 
 export default function Dashboard() {
   const { logout } = useAuth();
@@ -281,7 +299,7 @@ export default function Dashboard() {
                     labelLine={false}
                   >
                     {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell key={`cell-${index}`} fill={CATEGORY_COLORS[entry.name] || "#a3a3a3"} />
                     ))}
                   </Pie>
                   <Legend 
@@ -293,6 +311,12 @@ export default function Dashboard() {
                       justifyContent: 'space-between',
                       width: '100%'
                     }}
+                    // Custom legend icon color
+                    payload={pieData.map(entry => ({
+                      value: entry.name,
+                      type: 'square',
+                      color: CATEGORY_COLORS[entry.name] || "#a3a3a3"
+                    }))}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -369,7 +393,7 @@ export default function Dashboard() {
                         onChange={handleFilterChange}
                       >
                         <MenuItem value="">All</MenuItem>
-                        {CATEGORIES.map((category) => (
+                        {Object.keys(CATEGORY_COLORS).map((category) => (
                           <MenuItem key={category} value={category}>
                             {category}
                           </MenuItem>

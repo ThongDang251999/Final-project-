@@ -38,9 +38,11 @@ export default function Register() {
       errors.email = 'Email must end with @gmail.com';
     }
 
-    if (!formData.phone.trim()) {
+    // Flexible phone validation: allow any format, but require 10-15 digits
+    const digits = formData.phone.replace(/\D/g, '');
+    if (!digits) {
       errors.phone = 'Phone is required';
-    } else if (!/^\d{10,15}$/.test(formData.phone.trim())) {
+    } else if (digits.length < 10 || digits.length > 15) {
       errors.phone = 'Phone must be 10-15 digits';
     }
 
@@ -60,7 +62,9 @@ export default function Register() {
     const errors = validateForm();
     if (Object.keys(errors).length === 0) {
       try {
-        await register(formData.name, formData.email, formData.password, formData.phone);
+        // Only send digits to backend
+        const digits = formData.phone.replace(/\D/g, '');
+        await register(formData.name, formData.email, formData.password, digits);
         navigate('/');
       } catch (err) {
         // Error is handled by AuthContext
