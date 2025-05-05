@@ -329,14 +329,30 @@ export default function Dashboard() {
         <Grid item xs={12} md={6}>
           <Paper sx={{ p: 3, backgroundColor: 'white', borderRadius: 2 }}>
             <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>Recent Daily Spending (Last 7 Days)</Typography>
-            <Box sx={{ height: 320, position: 'relative' }}>
+            <Box sx={{ height: 320, position: 'relative', p: 2 }}>
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={recentSpending} margin={{ left: 48, right: 20, top: 20, bottom: 20 }}>
+                <BarChart
+                  data={recentSpending}
+                  margin={{ left: 48, right: 20, top: 32, bottom: 32 }}
+                  barCategoryGap={24}
+                >
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis tickFormatter={(value) => `$${value}`} />
-                  <Tooltip formatter={(value) => [`$${value.toFixed(2)}`, 'Spending']} />
-                  <Bar dataKey="amount" fill="#4682B4" barSize={40} />
+                  <XAxis dataKey="date" tick={{ fontSize: 13 }} />
+                  <YAxis
+                    tickFormatter={value => `$${value.toLocaleString()}`}
+                    tick={{ fontSize: 13 }}
+                  />
+                  <Tooltip
+                    contentStyle={{ borderRadius: 12, boxShadow: '0 2px 8px #0001', fontSize: 14 }}
+                    formatter={value => [`$${Number(value).toLocaleString()}`, 'Spending']}
+                    labelFormatter={label => `Date: ${label}`}
+                  />
+                  <Bar
+                    dataKey="amount"
+                    fill="#4682B4"
+                    barSize={32}
+                    radius={[8, 8, 0, 0]}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </Box>
